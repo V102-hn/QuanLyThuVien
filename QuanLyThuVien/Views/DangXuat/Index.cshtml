@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+<!-- ======================= HEADER VÀ NAV CỦA TRANG CÔNG KHAI ======================= -->
+@Html.Action("HeaderPartialView", "Admin")
+<!-- ===================== KẾT THÚC PHẦN GIAO DIỆN CHUNG ===================== -->
+<!-- NỘI DUNG CHÍNH CỦA TRANG ĐĂNG XUẤT -->
+<!-- Thêm id="logout-container" và data-redirect-url -->
+<div class="logout-container" id="logout-container" data-redirect-url="@Url.Action("Index","Home")">
+    <i class="fas fa-check-circle logout-icon"></i>
+    <h2>Đăng xuất thành công!</h2>
+    <p>Cảm ơn bạn đã sử dụng hệ thống quản trị thư viện.</p>
+    <p class="redirect-message">Bạn sẽ được tự động chuyển về trang chủ sau <span id="countdown">5</span> giây.</p>
+    <a href="@Url.Action("Index","Home")" class="btn btn-primary">Về Trang Chủ Ngay</a>
+</div>
+
+<!-- ======================= FOOTER CỦA TRANG CÔNG KHAI ======================= -->
+<footer>
+    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
+    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
+</footer>
+

@@ -1,0 +1,41 @@
+﻿<!-- Tái sử dụng Top Bar, Header, Nav từ trang chủ -->
+<div class="top-bar">
+    <span>Thứ Bảy, 13/9/2025, 19:42 GMT+7</span>
+    <div class="top-links">
+        <a href="index.html">Trang chủ</a> | <a href="#">Liên hệ</a> | <a href="#">English</a>
+    </div>
+</div>
+<!-- === DÁN ĐOẠN MÃ NÀY THAY THẾ CHO HEADER CŨ TRONG TẤT CẢ CÁC FILE ADMIN === -->
+<header>
+    <div class="logo">
+        <a href="admin.html">
+            <img src="~/Content/img/logo.png" alt="Logo MUCE">
+        </a>
+    </div>
+
+    <!-- Giữ lại title cho SEO và khả năng truy cập, chúng ta có thể ẩn nó đi bằng CSS nếu cần -->
+    <div class="title">
+    </div>
+
+    <!-- Nâng cấp nút bấm thành một dropdown menu -->
+    <div class="header-right">
+        <div class="profile-dropdown">
+            <!-- Nút bấm để mở menu -->
+            <button class="login-button">
+                Admin Name <i class="fas fa-caret-down"></i>
+            </button>
+            <!-- Nội dung menu, mặc định sẽ được ẩn -->
+            <div class="dropdown-content">
+                <a href="thong-tin-ca-nhan.html"><i class="fas fa-user-circle"></i> Thông tin cá nhân</a>
+                <a href="dang-xuat.html"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+            </div>
+        </div>
+    </div>
+</header>
+<nav>
+    <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> TRANG CHỦ</a></li>
+        <li><a href="#">NỘI QUY THƯ VIỆN</a></li>
+        <li><a href="#">GIỚI THIỆU SÁCH</a></li>
+    </ul>
+</nav>

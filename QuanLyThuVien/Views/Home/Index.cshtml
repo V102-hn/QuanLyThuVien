@@ -1,0 +1,174 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+<div class="top-bar">
+    <span>Thứ Bảy, 13/9/2025, 19:34 GMT+7</span>
+    <div class="top-links">
+        <a href="#">Trang chủ</a> |
+        <a href="#">Thư điện tử</a> |
+        <a href="#">Thư viện điện tử</a> |
+        <a href="#">Liên hệ</a> |
+        <a href="#">English</a>
+    </div>
+</div>
+
+<header>
+    <div class="logo">
+        <a href="index.html">
+            <img src="~/Content/img/logo.png" alt="Logo MUCE">
+        </a>
+    </div>
+    <div class="title">
+    </div>
+    <!-- THAY THẾ PHẦN LOGIN CŨ BẰNG NÚT NÀY -->
+    <div class="header-right">
+        <button id="login-trigger-btn" class="login-button">Đăng nhập</button>
+    </div>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="#"><i class="fas fa-home"></i> GIỚI THIỆU</a></li>
+        <li><a href="#">NỘI QUY THƯ VIỆN</a></li>
+        <li><a href="#">GIỚI THIỆU SÁCH</a></li>
+        <li><a href="#">HƯỚNG DẪN TRA CỨU</a></li>
+        <li><a href="#">BẠN ĐỌC TRA SÁCH</a></li>
+        <li><a href="#">THÔNG BÁO</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+    <main>
+        <section class="quick-search">
+            <h3>Tra Cứu Nhanh</h3>
+            <form id="search-form">
+                <div class="form-group">
+                    <label for="chuyen-nganh">Chuyên ngành:</label>
+                    <select id="chuyen-nganh" name="chuyen-nganh">
+                        <option value="khcb">Khoa học cơ bản</option>
+                        <option value="cntt">Công nghệ thông tin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ten-sach">Tên sách:</label>
+                    <input type="text" id="ten-sach" name="ten-sach">
+                </div>
+                <p class="note">Nhập đầy đủ tên sách hoặc từ khóa cho tên sách có dấu tiếng Việt đầy đủ bằng bảng mã Unicode.</p>
+                <div class="form-buttons">
+                    <button type="submit">Tìm</button>
+                    <button type="reset">Nhập lại</button>
+                    <button type="button">Hướng dẫn tra sách</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="news-section">
+            <h4><i class="fas fa-bullhorn"></i> Tin tức - Thông báo</h4>
+            <ul>
+                <li><a href="#">Hướng dẫn sử dụng Thư viện MUCE</a></li>
+                <li><a href="#">Nội quy thư viện trường Đại học Xây dựng Miền Trung...</a></li>
+                <li><a href="admin.html">Hướng dẫn sử dụng Thư viện số</a></li>
+            </ul>
+        </section>
+
+        <section class="news-section">
+            <h4><i class="fas fa-book-open"></i> Giới thiệu sách mới</h4>
+            <ul>
+                <li><a href="#">THÔNG BÁO SÁCH MỚI THÁNG 06/2025</a></li>
+                <li><a href="#">THÔNG BÁO SÁCH MỚI THÁNG 07/2024</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <aside>
+        <div class="sidebar-box">
+            <h5>THÔNG BÁO MỚI</h5>
+            <ul>
+                <li><a href="#">ĐHXD Miền Trung</a></li>
+                <li><a href="#">Thư cảm ơn nhân Ngày hội sách</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-box">
+            <h5>DANH MỤC SÁCH MỚI</h5>
+            <div class="book-item">
+                <img src="https://via.placeholder.com/80x100" alt="Bìa sách">
+                <div>
+                    <p class="book-title">THIẾT KẾ ĐƯỜNG Ô TÔ</p>
+                    <p class="book-author">Tác giả: Ths. Lê Đức...</p>
+                </div>
+            </div>
+            <div class="book-item">
+                <img src="https://via.placeholder.com/80x100" alt="Bìa sách">
+                <div>
+                    <p class="book-title">GIÁO TRÌNH THI CÔNG...</p>
+                    <p class="book-author">Tác giả: Nguyễn Thanh Hải...</p>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-box ad-box">
+            <h5>QUẢNG CÁO</h5>
+            <div class="ad-placeholder"></div>
+        </div>
+    </aside>
+</div>
+<!-- DÁN PHẦN NÀY VÀO TRƯỚC FOOTER -->
+<div id="login-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Đăng nhập Hệ thống</h2>
+        <form id="modal-login-form">
+            <div class="form-group">
+                <label for="username">Tên đăng nhập:</label>
+                <input type="text" id="username" name="username" required placeholder="Nhập mã sinh viên hoặc email">
+            </div>
+            <div class="form-group">
+                <label for="password">Mật khẩu:</label>
+                <input type="password" id="password" name="password" required placeholder="Nhập mật khẩu của bạn">
+            </div>
+            <div class="form-options">
+                <label>
+                    <input type="checkbox" name="remember"> Ghi nhớ đăng nhập
+                </label>
+                <a href="#">Quên mật khẩu?</a>
+            </div>
+            <button type="submit" class="submit-btn">Đăng nhập</button>
+            <!-- SỬA LẠI DÒNG NÀY TRONG MODAL ĐĂNG NHẬP -->
+            <p class="signup-link">Chưa có tài khoản? <a href="#" id="show-signup-modal">Đăng ký tại đây</a></p>
+        </form>
+    </div>
+</div>
+<!-- DÁN PHẦN NÀY VÀO NGAY SAU MODAL ĐĂNG NHẬP -->
+<div id="signup-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn-signup">&times;</span>
+        <h2>Đăng ký Tài khoản Mới</h2>
+        <form id="modal-signup-form">
+            <div class="form-group">
+                <label for="signup-fullname">Họ và tên:</label>
+                <input type="text" id="signup-fullname" name="fullname" required placeholder="Ví dụ: Nguyễn Văn An">
+            </div>
+            <div class="form-group">
+                <label for="signup-username">Tên đăng nhập (Email hoặc Mã SV):</label>
+                <input type="text" id="signup-username" name="username" required placeholder="Nhập email hoặc mã sinh viên">
+            </div>
+            <div class="form-group">
+                <label for="signup-password">Mật khẩu:</label>
+                <input type="password" id="signup-password" name="password" required placeholder="Tối thiểu 8 ký tự">
+            </div>
+            <div class="form-group">
+                <label for="signup-confirm-password">Xác nhận Mật khẩu:</label>
+                <input type="password" id="signup-confirm-password" name="confirm_password" required placeholder="Nhập lại mật khẩu">
+            </div>
+            <button type="submit" class="submit-btn">Đăng ký</button>
+            <!-- SỬA LẠI DÒNG NÀY TRONG MODAL ĐĂNG KÝ -->
+            <p class="login-link">Đã có tài khoản? <a href="#" id="show-login-modal">Đăng nhập ngay</a></p>
+        </form>
+    </div>
+</div>
+<footer>
+    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
+    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
+</footer>

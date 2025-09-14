@@ -1,0 +1,91 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+@Html.Action("HeaderPartialView", "Admin")
+<!-- KẾT THÚC PHẦN TÁI SỬ DỤNG -->
+<!-- BỐ CỤC MỚI CHO TRANG ADMIN -->
+<div class="admin-container">
+    @Html.Action("SidebarPartiView", "Admin")
+
+    <main class="admin-main-content">
+        <h1><i class="fas fa-tachometer-alt"></i> Bảng điều khiển</h1>
+
+        <section class="stats-cards">
+            <div class="card">
+                <i class="fas fa-book card-icon" style="color: #007bff;"></i>
+                <div class="card-info">
+                    <h2>12,560</h2>
+                    <p>Tổng số sách</p>
+                </div>
+            </div>
+            <div class="card">
+                <i class="fas fa-users card-icon" style="color: #28a745;"></i>
+                <div class="card-info">
+                    <h2>3,450</h2>
+                    <p>Tổng số độc giả</p>
+                </div>
+            </div>
+            <div class="card">
+                <i class="fas fa-book-reader card-icon" style="color: #ffc107;"></i>
+                <div class="card-info">
+                    <h2>789</h2>
+                    <p>Sách đang được mượn</p>
+                </div>
+            </div>
+            <div class="card">
+                <i class="fas fa-exclamation-triangle card-icon" style="color: #dc3545;"></i>
+                <div class="card-info">
+                    <h2>56</h2>
+                    <p>Sách quá hạn</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="recent-activity">
+            <h2><i class="fas fa-history"></i> Hoạt động gần đây</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã sách</th>
+                        <th>Tên sách</th>
+                        <th>Độc giả</th>
+                        <th>Ngày mượn</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>S0123</td>
+                        <td>Lập trình Hướng đối tượng</td>
+                        <td>Nguyễn Văn An</td>
+                        <td>12/09/2025</td>
+                        <td><span class="status borrowed">Đang mượn</span></td>
+                    </tr>
+                    <tr>
+                        <td>S0456</td>
+                        <td>Cấu trúc dữ liệu và giải thuật</td>
+                        <td>Trần Thị Bích</td>
+                        <td>11/09/2025</td>
+                        <td><span class="status returned">Đã trả</span></td>
+                    </tr>
+                    <tr>
+                        <td>S0789</td>
+                        <td>An toàn thông tin</td>
+                        <td>Lê Hữu Cường</td>
+                        <td>05/08/2025</td>
+                        <td><span class="status overdue">Quá hạn</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+<!-- KẾT THÚC BỐ CỤC TRANG ADMIN -->
+<!-- Tái sử dụng Footer và các Modal -->
+@Html.Partial("_FooterPartial")
+
+<!-- Các modal đăng nhập/đăng ký vẫn có thể được sử dụng ở đây -->
+<div id="login-modal" class="modal">...</div>
+<div id="signup-modal" class="modal">...</div>

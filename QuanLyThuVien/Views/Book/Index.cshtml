@@ -1,0 +1,129 @@
+﻿@model IEnumerable<QuanLyThuVien.Models.Sach>
+@{
+    ViewBag.Title = "Book";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+<!-- ======================= PHẦN TÁI SỬ DỤNG ======================= -->
+@Html.Action("HeaderPartialView", "Admin")
+<!-- ===================== KẾT THÚC PHẦN TÁI SỬ DỤNG ===================== -->
+
+
+<div class="admin-container">
+    <!-- ======================= SIDEBAR (THANH ĐIỀU HƯỚNG BÊN TRÁI) ======================= -->
+    @Html.Action("SidebarPartiView", "Admin")
+
+    <!-- ======================= NỘI DUNG CHÍNH CỦA TRANG ======================= -->
+    <main class="admin-main-content">
+        <h1><i class="fas fa-book"></i> Quản lý Sách</h1>
+
+        <div class="toolbar">
+            <input type="text" class="search-input" placeholder="Tìm kiếm theo tên sách, tác giả...">
+            <button id="add-book-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm Sách Mới</button>
+        </div>
+
+        <section class="data-table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã Sách</th>
+                        <th>Tên Sách</th>
+                        <th>Tác Giả</th>
+                        <th>Số Lượng Tồn</th>
+                        <th>Nhà Xuất Bản</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        // Dòng này đã được sửa, bỏ ký tự @ ở đầu
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.MaSach</td>
+                                <td>@item.TenSach</td>
+
+                                @* Hiển thị Tên Tác Giả, nếu Tác Giả null thì hiển thị chuỗi rỗng *@
+                                <td>@(item.TacGia?.TenTacGia)</td>
+
+                                <td>@item.SoLuongTon</td>
+
+                                @* Hiển thị Tên Nhà Xuất Bản, nếu NXB null thì hiển thị chuỗi rỗng *@
+                                <td>@(item.NhaXuatBan?.TenNXB)</td>
+
+                                <td class="action-buttons">
+                                    <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align:center;">Không có dữ liệu để hiển thị.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="pagination">
+                <a href="#">&laquo;</a>
+                <a href="#" class="active">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                <a href="#">&raquo;</a>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- ======================= MODAL (CỬA SỔ POP-UP) ĐỂ THÊM/SỬA SÁCH ======================= -->
+<div id="book-modal" class="modal">
+    <div class="modal-content large">
+        <span class="close-book-modal">&times;</span>
+        <h2 id="book-modal-title">Thêm Sách Mới</h2>
+        <form id="book-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ma-sach">Mã Sách (ISBN):</label>
+                    <input type="text" id="ma-sach" name="ma-sach" required>
+                </div>
+                <div class="form-group">
+                    <label for="ten-sach-modal">Tên Sách:</label>
+                    <input type="text" id="ten-sach-modal" name="ten-sach" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="tac-gia">Tác Giả:</label>
+                    <input type="text" id="tac-gia" name="tac-gia" required>
+                </div>
+                <div class="form-group">
+                    <label for="so-luong">Số Lượng Tồn:</label>
+                    <input type="number" id="so-luong" name="so-luong" required min="0">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nxb">Nhà Xuất Bản:</label>
+                    <select id="nxb" name="nxb" required><option value="">-- Chọn NXB --</option><option>NXB Khoa học và Kỹ thuật</option><option>NXB Giáo dục</option><option>NXB Bách Khoa</option></select>
+                </div>
+                <div class="form-group">
+                    <label for="the-loai">Thể Loại:</label>
+                    <select id="the-loai" name="the-loai" required><option value="">-- Chọn Thể loại --</option><option>Lập trình</option><option>Toán học</option><option>An toàn thông tin</option></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="mo-ta">Mô Tả Ngắn:</label>
+                <textarea id="mo-ta" name="mo-ta" rows="4"></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Lưu Lại</button>
+        </form>
+    </div>
+</div>
+
+<!-- ======================= FOOTER VÀ CÁC MODAL KHÁC ======================= -->
+
+@Html.Partial("_FooterPartial")
+

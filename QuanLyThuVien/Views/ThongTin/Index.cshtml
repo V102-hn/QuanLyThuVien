@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+<!-- ======================= PHẦN GIAO DIỆN CHUNG (ĐÃ BỔ SUNG ĐẦY ĐỦ) ======================= -->
+@Html.Action("HeaderPartialView", "Admin")
+<!-- ===================== KẾT THÚC PHẦN GIAO DIỆN CHUNG ===================== -->
+
+<div class="admin-container">
+    <!-- Sidebar (đã cập nhật) -->
+    @Html.Action("SidebarPartiView", "Admin")
+
+    <!-- Nội dung chính -->
+    <main class="admin-main-content">
+        <h1><i class="fas fa-user-edit"></i> Thông tin cá nhân</h1>
+
+        <div class="profile-container">
+            <form id="profile-form">
+                <div class="profile-grid">
+                    <!-- Cột thông tin cơ bản -->
+                    <div class="profile-section">
+                        <h3>Thông tin cơ bản</h3>
+                        <div class="form-group">
+                            <label for="profile-username">Tên đăng nhập:</label>
+                            <input type="text" id="profile-username" value="admin" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-fullname">Họ và Tên:</label>
+                            <input type="text" id="profile-fullname" value="Quản Trị Viên" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-email">Email:</label>
+                            <input type="email" id="profile-email" value="admin@muce.edu.vn" required>
+                        </div>
+                    </div>
+
+                    <!-- Cột đổi mật khẩu -->
+                    <div class="profile-section">
+                        <h3>Đổi mật khẩu</h3>
+                        <div class="form-group">
+                            <label for="profile-old-password">Mật khẩu cũ:</label>
+                            <input type="password" id="profile-old-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-new-password">Mật khẩu mới:</label>
+                            <input type="password" id="profile-new-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-confirm-password">Xác nhận mật khẩu mới:</label>
+                            <input type="password" id="profile-confirm-password">
+                        </div>
+                        <p class="setting-description">Để trống các trường mật khẩu nếu bạn không muốn thay đổi.</p>
+                    </div>
+                </div>
+
+                <div class="form-buttons" style="justify-content: flex-end; margin-left: 0; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Cập nhật Thông tin</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<!-- ======================= FOOTER (ĐÃ BỔ SUNG) ======================= -->
+<footer>
+    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
+    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
+</footer>
+
+
+

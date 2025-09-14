@@ -1,0 +1,99 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+<!-- ======================= PHẦN GIAO DIỆN CHUNG (ĐÃ BỔ SUNG) ======================= -->
+@Html.Action("HeaderPartialView", "Admin")
+
+<!-- ===================== KẾT THÚC PHẦN GIAO DIỆN CHUNG ===================== -->
+
+<div class="admin-container">
+    <!-- Sidebar -->
+    @Html.Action("SidebarPartiView", "Admin")
+
+    <!-- Nội dung chính -->
+    <main class="admin-main-content">
+        <h1><i class="fas fa-gavel"></i> Xử lý Vi phạm</h1>
+
+        <div class="toolbar">
+            <div class="search-filter-group">
+                <input type="text" class="search-input" placeholder="Tìm kiếm theo mã VP, tên độc giả...">
+                <select class="filter-status">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="unpaid">Chưa thanh toán</option>
+                    <option value="paid">Đã thanh toán</option>
+                </select>
+            </div>
+            <button id="add-violation-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Lập Phiếu Phạt</button>
+        </div>
+
+        <section class="data-table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã Vi Phạm</th>
+                        <th>Tên Độc Giả</th>
+                        <th>Loại Vi Phạm</th>
+                        <th>Số Tiền Phạt</th>
+                        <th>Ngày Ghi Nhận</th>
+                        <th>Trạng Thái</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>VP001</td>
+                        <td>Lê Hữu Cường</td>
+                        <td>Trả sách quá hạn</td>
+                        <td>30,000đ</td>
+                        <td>19/08/2025</td>
+                        <td><span class="status unpaid">Chưa thanh toán</span></td>
+                        <td class="action-buttons">
+                            <button class="btn btn-success btn-mark-paid"><i class="fas fa-check"></i> Đã trả</button>
+                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>VP002</td>
+                        <td>Phạm Thị Dung</td>
+                        <td>Làm hỏng sách</td>
+                        <td>150,000đ</td>
+                        <td>14/09/2025</td>
+                        <td><span class="status paid">Đã thanh toán</span></td>
+                        <td class="action-buttons">
+                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+
+<!-- Modal cho Vi phạm/Phạt -->
+<div id="violation-modal" class="modal">
+    <div class="modal-content large">
+        <span class="close-violation-modal">&times;</span>
+        <h2 id="violation-modal-title">Lập Phiếu Phạt Mới</h2>
+        <form id="violation-form">
+            <div class="form-row">
+                <div class="form-group"><label for="ma-vi-pham">Mã Vi Phạm:</label><input type="text" id="ma-vi-pham" readonly></div>
+                <div class="form-group"><label for="doc-gia-vp">Độc Giả:</label><select id="doc-gia-vp" required><option value="">-- Chọn độc giả --</option><option value="DG001">DG001 - Nguyễn Văn An</option><option value="DG003">DG003 - Lê Hữu Cường</option></select></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="loai-vi-pham">Loại Vi Phạm:</label><select id="loai-vi-pham" required><option value="late">Trả sách quá hạn</option><option value="damage">Làm hỏng sách</option><option value="lost">Làm mất sách</option></select></div>
+                <div class="form-group"><label for="so-tien-phat">Số Tiền Phạt (VNĐ):</label><input type="number" id="so-tien-phat" required></div>
+            </div>
+            <div class="form-group"><label for="ghi-chu-vp">Ghi Chú:</label><textarea id="ghi-chu-vp" rows="3"></textarea></div>
+            <button type="submit" class="submit-btn">Lưu Phiếu Phạt</button>
+        </form>
+    </div>
+</div>
+
+<!-- ======================= FOOTER (ĐÃ BỔ SUNG) ======================= -->
+<footer>
+    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
+    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
+</footer>

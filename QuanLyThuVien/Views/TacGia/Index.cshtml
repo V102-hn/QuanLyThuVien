@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+<!-- ======================= PHẦN GIAO DIỆN CHUNG (ĐÃ BỔ SUNG) ======================= -->
+@Html.Action("HeaderPartialView", "Admin")
+<!-- ===================== KẾT THÚC PHẦN GIAO DIỆN CHUNG ===================== -->
+
+<div class="admin-container">
+    <!-- Sidebar -->
+    @Html.Action("SidebarPartiView", "Admin")
+
+
+    <!-- Nội dung chính -->
+    <main class="admin-main-content">
+        <h1><i class="fas fa-user-pen"></i> Quản lý Tác giả</h1>
+        <div class="toolbar">
+            <input type="text" class="search-input" placeholder="Tìm kiếm theo tên tác giả...">
+            <button id="add-author-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm Tác giả Mới</button>
+        </div>
+
+        <section class="data-table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã Tác giả</th>
+                        <th>Tên Tác giả</th>
+                        <th>Thông tin liên hệ</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>TG001</td>
+                        <td>Lê Hữu Cường</td>
+                        <td>cuong.lh@email.com</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>TG002</td>
+                        <td>Nguyễn Văn An</td>
+                        <td>an.nv@email.com</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+
+<!-- Modal cho Tác giả -->
+<div id="author-modal" class="modal">
+    <div class="modal-content large">
+        <span class="close-author-modal">&times;</span>
+        <h2 id="author-modal-title">Thêm Tác giả Mới</h2>
+        <form id="author-form">
+            <div class="form-row"><div class="form-group"><label for="ma-tac-gia">Mã Tác giả:</label><input type="text" id="ma-tac-gia" required></div><div class="form-group"><label for="ten-tac-gia">Tên Tác giả:</label><input type="text" id="ten-tac-gia" required></div></div>
+            <div class="form-group"><label for="thong-tin-lien-he">Thông tin liên hệ (Email, SĐT...):</label><input type="text" id="thong-tin-lien-he"></div>
+            <button type="submit" class="submit-btn">Lưu Lại</button>
+        </form>
+    </div>
+</div>
+
+<!-- ======================= FOOTER (ĐÃ BỔ SUNG) ======================= -->
+<footer>
+    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
+    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
+</footer>
+

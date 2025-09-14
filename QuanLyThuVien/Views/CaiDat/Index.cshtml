@@ -1,0 +1,66 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+<!-- ======================= PHẦN GIAO DIỆN CHUNG (ĐÃ BỔ SUNG ĐẦY ĐỦ) ======================= -->
+@Html.Action("HeaderPartialView", "Admin")
+<!-- ===================== KẾT THÚC PHẦN GIAO DIỆN CHUNG ===================== -->
+
+<div class="admin-container">
+    <!-- Sidebar (đã cập nhật) -->
+    @Html.Action("SidebarPartiView", "Admin")
+
+    <!-- Nội dung chính -->
+    <main class="admin-main-content">
+        <h1><i class="fas fa-cog"></i> Cài đặt Hệ thống & Quy định</h1>
+
+        <form id="settings-form" class="settings-container">
+            <!-- Phần quy định mượn/trả -->
+            <section class="settings-section">
+                <h3>Quy định Mượn/Trả</h3>
+                <div class="form-group">
+                    <label for="loan-duration">Số ngày mượn tối đa cho một cuốn sách:</label>
+                    <input type="number" id="loan-duration" name="loan-duration" value="14">
+                    <p class="setting-description">Số ngày độc giả được phép giữ sách trước khi bị tính là quá hạn.</p>
+                </div>
+                <div class="form-group">
+                    <label for="max-loan-books">Số lượng sách tối đa một độc giả được mượn cùng lúc:</label>
+                    <input type="number" id="max-loan-books" name="max-loan-books" value="5">
+                    <p class="setting-description">Giới hạn số lượng sách một độc giả có thể mượn trong một thời điểm.</p>
+                </div>
+                <div class="form-group">
+                    <label for="overdue-fine">Tiền phạt cho mỗi ngày trả sách muộn (VNĐ):</label>
+                    <input type="number" id="overdue-fine" name="overdue-fine" value="2000">
+                    <p class="setting-description">Số tiền phạt sẽ được tính cho mỗi cuốn sách bị trả muộn, nhân với số ngày quá hạn.</p>
+                </div>
+            </section>
+
+            <!-- Phần thông tin thư viện -->
+            <section class="settings-section">
+                <h3>Thông tin Thư viện</h3>
+                <div class="form-group">
+                    <label for="library-name">Tên thư viện:</label>
+                    <input type="text" id="library-name" name="library-name" value="Thư viện - Trường Đại học Xây dựng Miền Trung">
+                    <p class="setting-description">Tên này sẽ hiển thị trên các trang công khai và phiếu in.</p>
+                </div>
+                <div class="form-group">
+                    <label for="library-address">Địa chỉ:</label>
+                    <input type="text" id="library-address" name="library-address" value="Số 24 Nguyễn Du, Phường 7, Tuy Hòa, Phú Yên">
+                </div>
+            </section>
+
+            <div class="form-buttons" style="justify-content: flex-end; margin-left: 0;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Lưu Thay đổi</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<!-- ======================= FOOTER (ĐÃ BỔ SUNG) ======================= -->
+<footer>
+    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
+    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
+</footer>
+

@@ -1,0 +1,177 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+<!-- ======================= PHẦN GIAO DIỆN CHUNG ======================= -->
+@Html.Action("HeaderPartialView", "Admin")
+<!-- ===================== KẾT THÚC PHẦN GIAO DIỆN CHUNG ===================== -->
+
+<div class="admin-container">
+    <!-- ======================= SIDEBAR ======================= -->
+    @Html.Action("SidebarPartiView", "Admin")
+
+    <!-- ======================= NỘI DUNG CHÍNH ======================= -->
+    <main class="admin-main-content">
+        <h1><i class="fas fa-exchange-alt"></i> Quản lý Mượn/Trả Sách</h1>
+
+        <!-- Thanh công cụ -->
+        <div class="toolbar">
+            <div class="search-filter-group">
+                <input type="text" class="search-input" placeholder="Tìm kiếm theo mã phiếu, mã/tên độc giả...">
+                <select class="filter-status">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="borrowed">Đang mượn</option>
+                    <option value="returned">Đã trả</option>
+                    <option value="overdue">Quá hạn</option>
+                </select>
+            </div>
+            <button id="add-loan-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Tạo Phiếu Mượn</button>
+        </div>
+
+        <!-- Bảng dữ liệu -->
+        <section class="data-table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã Phiếu</th>
+                        <th>Tên Độc Giả</th>
+                        <th>Ngày Mượn</th>
+                        <th>Ngày Hẹn Trả</th>
+                        <th>Trạng Thái</th>
+                        <th style="width: 260px;">Hành Động</th>
+                    </tr>
+                </thead>
+                <!-- Tìm đến thẻ <tbody> trong file quan-ly-muon-tra.html và cập nhật lại các nút -->
+                <tbody>
+                    <tr>
+                        <td>PM001</td>
+                        <td>Nguyễn Văn An</td>
+                        <td>12/09/2025</td>
+                        <td>26/09/2025</td>
+                        <td><span class="status borrowed">Đang mượn</span></td>
+                        <td class="action-buttons">
+                            <!-- CẬP NHẬT Ở ĐÂY -->
+                            <button class="btn btn-info btn-view-details"><i class="fas fa-eye"></i> Chi tiết</button>
+                            <button class="btn btn-success btn-mark-returned"><i class="fas fa-check"></i> Trả sách</button>
+                            <button class="btn btn-danger btn-delete"><i class="fas fa-trash"></i> Xóa</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>PM002</td>
+                        <td>Trần Thị Bích</td>
+                        <td>11/09/2025</td>
+                        <td>25/09/2025</td>
+                        <td><span class="status returned">Đã trả</span></td>
+                        <td class="action-buttons">
+                            <!-- CẬP NHẬT Ở ĐÂY -->
+                            <button class="btn btn-info btn-view-details"><i class="fas fa-eye"></i> Chi tiết</button>
+                            <button class="btn btn-danger btn-delete"><i class="fas fa-trash"></i> Xóa</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>PM003</td>
+                        <td>Lê Hữu Cường</td>
+                        <td>05/08/2025</td>
+                        <td>19/08/2025</td>
+                        <td><span class="status overdue">Quá hạn</span></td>
+                        <td class="action-buttons">
+                            <!-- CẬP NHẬT Ở ĐÂY -->
+                            <button class="btn btn-info btn-view-details"><i class="fas fa-eye"></i> Chi tiết</button>
+                            <button class="btn btn-success btn-mark-returned"><i class="fas fa-check"></i> Trả sách</button>
+                            <button class="btn btn-danger btn-delete"><i class="fas fa-trash"></i> Xóa</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>PM004</td>
+                        <td>Phạm Thị Dung</td>
+                        <td>14/09/2025</td>
+                        <td>28/09/2025</td>
+                        <td><span class="status borrowed">Đang mượn</span></td>
+                        <td class="action-buttons">
+                            <!-- CẬP NHẬT Ở ĐÂY -->
+                            <button class="btn btn-info btn-view-details"><i class="fas fa-eye"></i> Chi tiết</button>
+                            <button class="btn btn-success btn-mark-returned"><i class="fas fa-check"></i> Trả sách</button>
+                            <button class="btn btn-danger btn-delete"><i class="fas fa-trash"></i> Xóa</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Phân trang -->
+        <div class="pagination">
+            <a href="#">&laquo;</a>
+            <a href="#" class="active">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">&raquo;</a>
+        </div>
+    </main>
+</div>
+
+<!-- ======================= FOOTER ======================= -->
+<footer>
+    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
+    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
+</footer>
+
+<!-- ======================= MODAL CHO PHIẾU MƯỢN ======================= -->
+<div id="loan-modal" class="modal">
+    <div class="modal-content large">
+        <span class="close-loan-modal">&times;</span>
+        <h2 id="loan-modal-title">Tạo Phiếu Mượn Mới</h2>
+        <form id="loan-form">
+            <!-- Nội dung form giữ nguyên như trước -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ma-phieu">Mã Phiếu Mượn</label>
+                    <input type="text" id="ma-phieu" name="ma-phieu" readonly value="PM005">
+                </div>
+                <div class="form-group">
+                    <label for="doc-gia-select">Chọn Độc Giả</label>
+                    <select id="doc-gia-select" name="doc-gia-select" required>
+                        <option value="">-- Chọn độc giả --</option>
+                        <option value="DG001">DG001 - Nguyễn Văn An</option>
+                        <option value="DG002">DG002 - Trần Thị Bích</option>
+                        <option value="DG003">DG003 - Lê Hữu Cường</option>
+                        <option value="DG004">DG004 - Phạm Thị Dung</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ngay-muon">Ngày Mượn</label>
+                    <input type="date" id="ngay-muon" name="ngay-muon" required>
+                </div>
+                <div class="form-group">
+                    <label for="ngay-hen-tra">Ngày Hẹn Trả</label>
+                    <input type="date" id="ngay-hen-tra" name="ngay-hen-tra" required>
+                </div>
+            </div>
+            <hr style="margin: 20px 0;">
+            <h4>Danh sách sách mượn</h4>
+            <div class="book-selection-area">
+                <div class="form-group">
+                    <label for="sach-select">Chọn Sách</label>
+                    <select id="sach-select" name="sach-select">
+                        <option value="">-- Tìm và chọn sách --</option>
+                        <option value="S0123">S0123 - Lập trình Hướng đối tượng</option>
+                        <option value="S0456">S0456 - Cấu trúc dữ liệu và giải thuật</option>
+                        <option value="S0789">S0789 - An toàn thông tin</option>
+                    </select>
+                </div>
+                <button type="button" id="add-book-to-list-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm sách</button>
+            </div>
+            <div class="selected-books-container"><ul id="selected-books-list"></ul></div>
+            <div class="form-group"><label for="ghi-chu">Ghi Chú</label><textarea id="ghi-chu" name="ghi-chu" rows="3"></textarea></div>
+            <div class="form-buttons" style="justify-content: flex-end; margin-left: 0;">
+                <button type="button" class="btn btn-secondary close-loan-modal-btn">Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu Phiếu Mượn</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+

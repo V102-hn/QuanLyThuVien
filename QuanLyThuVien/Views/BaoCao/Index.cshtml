@@ -1,0 +1,122 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+<!-- ======================= PHẦN GIAO DIỆN CHUNG ======================= -->
+@Html.Action("HeaderPartialView", "Admin")
+<!-- ===================== KẾT THÚC PHẦN GIAO DIỆN CHUNG ===================== -->
+
+<div class="admin-container">
+    <!-- ======================= SIDEBAR ======================= -->
+    @Html.Action("SidebarPartiView", "Admin")
+
+    <!-- ======================= NỘI DUNG CHÍNH ======================= -->
+    <main class="admin-main-content">
+        <h1><i class="fas fa-chart-bar"></i> Báo cáo & Thống kê</h1>
+
+        <!-- Thanh công cụ: Bộ lọc và nút xuất báo cáo -->
+        <div class="toolbar report-toolbar">
+            <div class="report-filters">
+                <label for="date-range">Xem báo cáo theo:</label>
+                <select id="date-range" class="filter-status">
+                    <option value="month">Tháng này</option>
+                    <option value="week">Tuần này</option>
+                    <option value="year">Năm nay</option>
+                    <option value="custom">Tùy chỉnh...</option>
+                </select>
+            </div>
+            <button id="export-report-btn" class="btn btn-success"><i class="fas fa-file-excel"></i> Xuất Báo cáo</button>
+        </div>
+
+        <!-- Các chỉ số tổng quan -->
+        <section class="stats-cards">
+            <div class="card">
+                <div class="card-icon" style="color: #007bff;"><i class="fas fa-book-reader"></i></div>
+                <div class="card-info">
+                    <h2>1,280</h2>
+                    <p>Lượt mượn trong tháng</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="color: #dc3545;"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="card-info">
+                    <h2>56</h2>
+                    <p>Sách đang quá hạn</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="color: #28a745;"><i class="fas fa-user-plus"></i></div>
+                <div class="card-info">
+                    <h2>95</h2>
+                    <p>Độc giả mới trong tháng</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="color: #ffc107;"><i class="fas fa-plus-circle"></i></div>
+                <div class="card-info">
+                    <h2>215</h2>
+                    <p>Sách mới được nhập</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Khu vực biểu đồ -->
+        <section class="report-grid">
+            <div class="report-card">
+                <h3>Biểu đồ Lượt mượn sách (6 tháng gần nhất)</h3>
+                <canvas id="loanChart"></canvas>
+            </div>
+            <div class="report-card">
+                <h3>Cơ cấu Thể loại sách trong thư viện</h3>
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Bảng xếp hạng -->
+        <section class="top-list-section">
+            <h2><i class="fas fa-star"></i> Top 10 sách được mượn nhiều nhất</h2>
+            <div class="data-table-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">Hạng</th>
+                            <th>Tên Sách</th>
+                            <th>Tác Giả</th>
+                            <th style="width: 150px;">Lượt mượn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Cấu trúc dữ liệu và giải thuật</td>
+                            <td>Lê Hữu Cường</td>
+                            <td>152</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Lập trình Hướng đối tượng</td>
+                            <td>Nguyễn Văn An</td>
+                            <td>138</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Mạng máy tính căn bản</td>
+                            <td>Trần Thị Bích</td>
+                            <td>115</td>
+                        </tr>
+                        <!-- Thêm các hàng khác nếu cần -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ======================= FOOTER ======================= -->
+<footer>
+    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
+    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
+</footer>
