@@ -1,5 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Schema Namespace="QuanLyThuVienModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="CauHinh">
+    <Key>
+      <PropertyRef Name="MaCauHinh" />
+    </Key>
+    <Property Name="MaCauHinh" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="GiaTri" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="MoTa" Type="nvarchar" MaxLength="255" />
+  </EntityType>
   <EntityType Name="ChiTietMuonTra">
     <Key>
       <PropertyRef Name="MaChiTiet" />
@@ -137,7 +145,7 @@
     <Property Name="MaMuonTra" Type="int" />
     <Property Name="LoaiViPham" Type="nvarchar" MaxLength="255" Nullable="false" />
     <Property Name="NgayViPham" Type="datetime" Nullable="false" />
-    <Property Name="HinhThucPhat" Type="nvarchar(max)" />
+    <Property Name="HinhThucPhat" Type="int" />
     <Property Name="TrangThaiXuLy" Type="nvarchar" MaxLength="50" Nullable="false" />
   </EntityType>
   <Association Name="FK__ChiTietMu__MaMuo__6383C8BA">
@@ -273,6 +281,7 @@
     </ReferentialConstraint>
   </Association>
   <EntityContainer Name="QuanLyThuVienModelStoreContainer">
+    <EntitySet Name="CauHinh" EntityType="Self.CauHinh" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ChiTietMuonTra" EntityType="Self.ChiTietMuonTra" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="DocGia" EntityType="Self.DocGia" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="MuonTra" EntityType="Self.MuonTra" Schema="dbo" store:Type="Tables" />

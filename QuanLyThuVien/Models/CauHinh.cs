@@ -12,17 +12,10 @@ namespace QuanLyThuVien.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class ViPham
+    public partial class CauHinh
     {
-        public int MaViPham { get; set; }
-        public int MaDocGia { get; set; }
-        public Nullable<int> MaMuonTra { get; set; }
-        public string LoaiViPham { get; set; }
-        public System.DateTime NgayViPham { get; set; }
-        public Nullable<int> HinhThucPhat { get; set; }
-        public string TrangThaiXuLy { get; set; }
-    
-        public virtual DocGia DocGia { get; set; }
-        public virtual MuonTra MuonTra { get; set; }
+        public string MaCauHinh { get; set; }
+        public string GiaTri { get; set; }
+        public string MoTa { get; set; }
     }
 }

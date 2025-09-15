@@ -1,4 +1,4 @@
-﻿
+﻿@model IEnumerable<QuanLyThuVien.Models.ThuThu>
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
@@ -34,38 +34,45 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>admin</td>
-                        <td>Quản Trị Viên</td>
-                        <td>admin@muce.edu.vn</td>
-                        <td><span class="role admin">Admin</span></td>
-                        <td><span class="status active-card">Hoạt động</span></td>
-                        <td class="action-buttons">
-                            <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>thuthu01</td>
-                        <td>Nguyễn Thị Lan</td>
-                        <td>lan.nt@muce.edu.vn</td>
-                        <td><span class="role librarian">Thủ thư</span></td>
-                        <td><span class="status active-card">Hoạt động</span></td>
-                        <td class="action-buttons">
-                            <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>thuthu02</td>
-                        <td>Trần Văn Bình</td>
-                        <td>binh.tv@muce.edu.vn</td>
-                        <td><span class="role librarian">Thủ thư</span></td>
-                        <td><span class="status locked-card">Bị khóa</span></td>
-                        <td class="action-buttons">
-                            <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
+                    <!-- (2) Dùng vòng lặp để duyệt qua danh sách người dùng -->
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.Username</td>
+                            <td>@user.HoTen</td>
+                            <td>@user.Email</td>
+                            <td>
+                                <!-- (3) Logic hiển thị Vai trò dựa trên cột IsAdmin -->
+                                @if (user.IsAdmin == true)
+                                {
+                                    <span class="role admin">Admin</span>
+                                }
+                                else
+                                {
+                                    <span class="role librarian">Thủ thư</span>
+                                }
+                            </td>
+                            <td>
+                                <!-- (4) Logic hiển thị Trạng thái dựa trên cột DaXoa -->
+                                @if (user.DaXoa == true)
+                                {
+                                    <span class="status locked-card">Bị khóa</span>
+                                }
+                                else
+                                {
+                                    <span class="status active-card">Hoạt động</span>
+                                }
+                            </td>
+                            <td class="action-buttons">
+                                <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                                <!-- Nút xóa chỉ nên hiển thị cho tài khoản không phải admin -->
+                                @if (user.IsAdmin != true)
+                                {
+                                    <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                                }
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </section>

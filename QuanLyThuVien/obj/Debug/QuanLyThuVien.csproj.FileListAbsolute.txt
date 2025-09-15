@@ -80,4 +80,3 @@ D:\QLDAPM\Library_Manager\Project_Library\QuanLyThuVien\QuanLyThuVien\bin\Entity
 D:\QLDAPM\Library_Manager\Project_Library\QuanLyThuVien\QuanLyThuVien\bin\EntityFramework.SqlServer.dll
 D:\QLDAPM\Library_Manager\Project_Library\QuanLyThuVien\QuanLyThuVien\bin\EntityFramework.xml
 D:\QLDAPM\Library_Manager\Project_Library\QuanLyThuVien\QuanLyThuVien\bin\EntityFramework.SqlServer.xml
-D:\QLDAPM\Library_Manager\Project_Library\QuanLyThuVien\QuanLyThuVien\obj\Debug\QuanLyThuVien.csproj.AssemblyReference.cache

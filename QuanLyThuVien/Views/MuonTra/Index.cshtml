@@ -1,4 +1,4 @@
-﻿
+﻿@model IEnumerable<QuanLyThuVien.ViewModels.MuonTraViewModel>
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
@@ -45,57 +45,37 @@
                 </thead>
                 <!-- Tìm đến thẻ <tbody> trong file quan-ly-muon-tra.html và cập nhật lại các nút -->
                 <tbody>
+                    @foreach (var phieu in Model)
+                    {
                     <tr>
-                        <td>PM001</td>
-                        <td>Nguyễn Văn An</td>
-                        <td>12/09/2025</td>
-                        <td>26/09/2025</td>
-                        <td><span class="status borrowed">Đang mượn</span></td>
+                        <td>@phieu.MaPhieu</td>
+                        <td>@phieu.TenDocGia</td>
+                        <td>@phieu.NgayMuon.ToString("dd/MM/yyyy")</td>
+                        <td>@phieu.NgayHenTra.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @if (phieu.TrangThai == "Đã trả")
+                            {
+                                <span class="status returned">Đã trả</span>
+                            }
+                            else if (phieu.TrangThai == "Quá hạn")
+                            {
+                                <span class="status overdue">Quá hạn</span>
+                            }
+                            else
+                            {
+                                <span class="status borrowed">Đang mượn</span>
+                            }
+                        </td>
                         <td class="action-buttons">
-                            <!-- CẬP NHẬT Ở ĐÂY -->
                             <button class="btn btn-info btn-view-details"><i class="fas fa-eye"></i> Chi tiết</button>
-                            <button class="btn btn-success btn-mark-returned"><i class="fas fa-check"></i> Trả sách</button>
+                            @if (phieu.TrangThai != "Đã trả")
+                            {
+                                <button class="btn btn-success btn-mark-returned"><i class="fas fa-check"></i> Trả sách</button>
+                            }
                             <button class="btn btn-danger btn-delete"><i class="fas fa-trash"></i> Xóa</button>
                         </td>
                     </tr>
-                    <tr>
-                        <td>PM002</td>
-                        <td>Trần Thị Bích</td>
-                        <td>11/09/2025</td>
-                        <td>25/09/2025</td>
-                        <td><span class="status returned">Đã trả</span></td>
-                        <td class="action-buttons">
-                            <!-- CẬP NHẬT Ở ĐÂY -->
-                            <button class="btn btn-info btn-view-details"><i class="fas fa-eye"></i> Chi tiết</button>
-                            <button class="btn btn-danger btn-delete"><i class="fas fa-trash"></i> Xóa</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>PM003</td>
-                        <td>Lê Hữu Cường</td>
-                        <td>05/08/2025</td>
-                        <td>19/08/2025</td>
-                        <td><span class="status overdue">Quá hạn</span></td>
-                        <td class="action-buttons">
-                            <!-- CẬP NHẬT Ở ĐÂY -->
-                            <button class="btn btn-info btn-view-details"><i class="fas fa-eye"></i> Chi tiết</button>
-                            <button class="btn btn-success btn-mark-returned"><i class="fas fa-check"></i> Trả sách</button>
-                            <button class="btn btn-danger btn-delete"><i class="fas fa-trash"></i> Xóa</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>PM004</td>
-                        <td>Phạm Thị Dung</td>
-                        <td>14/09/2025</td>
-                        <td>28/09/2025</td>
-                        <td><span class="status borrowed">Đang mượn</span></td>
-                        <td class="action-buttons">
-                            <!-- CẬP NHẬT Ở ĐÂY -->
-                            <button class="btn btn-info btn-view-details"><i class="fas fa-eye"></i> Chi tiết</button>
-                            <button class="btn btn-success btn-mark-returned"><i class="fas fa-check"></i> Trả sách</button>
-                            <button class="btn btn-danger btn-delete"><i class="fas fa-trash"></i> Xóa</button>
-                        </td>
-                    </tr>
+                    }
                 </tbody>
             </table>
         </section>

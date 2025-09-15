@@ -142,13 +142,22 @@
     <EntitySetMapping Name="ViPhams">
       <EntityTypeMapping TypeName="QuanLyThuVienModel.ViPham">
         <MappingFragment StoreEntitySet="ViPham">
-          <ScalarProperty Name="MaViPham" ColumnName="MaViPham" />
-          <ScalarProperty Name="MaDocGia" ColumnName="MaDocGia" />
-          <ScalarProperty Name="MaMuonTra" ColumnName="MaMuonTra" />
-          <ScalarProperty Name="LoaiViPham" ColumnName="LoaiViPham" />
-          <ScalarProperty Name="NgayViPham" ColumnName="NgayViPham" />
-          <ScalarProperty Name="HinhThucPhat" ColumnName="HinhThucPhat" />
           <ScalarProperty Name="TrangThaiXuLy" ColumnName="TrangThaiXuLy" />
+          <ScalarProperty Name="HinhThucPhat" ColumnName="HinhThucPhat" />
+          <ScalarProperty Name="NgayViPham" ColumnName="NgayViPham" />
+          <ScalarProperty Name="LoaiViPham" ColumnName="LoaiViPham" />
+          <ScalarProperty Name="MaMuonTra" ColumnName="MaMuonTra" />
+          <ScalarProperty Name="MaDocGia" ColumnName="MaDocGia" />
+          <ScalarProperty Name="MaViPham" ColumnName="MaViPham" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CauHinhs">
+      <EntityTypeMapping TypeName="QuanLyThuVienModel.CauHinh">
+        <MappingFragment StoreEntitySet="CauHinh">
+          <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+          <ScalarProperty Name="GiaTri" ColumnName="GiaTri" />
+          <ScalarProperty Name="MaCauHinh" ColumnName="MaCauHinh" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

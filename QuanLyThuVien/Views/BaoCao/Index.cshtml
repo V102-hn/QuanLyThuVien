@@ -1,4 +1,4 @@
-﻿
+﻿@model QuanLyThuVien.ViewModels.BaoCaoViewModel
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
@@ -15,8 +15,7 @@
     <!-- ======================= NỘI DUNG CHÍNH ======================= -->
     <main class="admin-main-content">
         <h1><i class="fas fa-chart-bar"></i> Báo cáo & Thống kê</h1>
-
-        <!-- Thanh công cụ: Bộ lọc và nút xuất báo cáo -->
+        <!-- DÁN ĐOẠN MÃ BỊ THIẾU VÀO ĐÂY -->
         <div class="toolbar report-toolbar">
             <div class="report-filters">
                 <label for="date-range">Xem báo cáo theo:</label>
@@ -29,34 +28,33 @@
             </div>
             <button id="export-report-btn" class="btn btn-success"><i class="fas fa-file-excel"></i> Xuất Báo cáo</button>
         </div>
-
         <!-- Các chỉ số tổng quan -->
         <section class="stats-cards">
             <div class="card">
                 <div class="card-icon" style="color: #007bff;"><i class="fas fa-book-reader"></i></div>
                 <div class="card-info">
-                    <h2>1,280</h2>
+                    <h2>@Model.LuotMuonTrongThang.ToString("N0")</h2>
                     <p>Lượt mượn trong tháng</p>
                 </div>
             </div>
             <div class="card">
                 <div class="card-icon" style="color: #dc3545;"><i class="fas fa-exclamation-triangle"></i></div>
                 <div class="card-info">
-                    <h2>56</h2>
+                    <h2>@Model.SachDangQuaHan.ToString("N0")</h2>
                     <p>Sách đang quá hạn</p>
                 </div>
             </div>
             <div class="card">
                 <div class="card-icon" style="color: #28a745;"><i class="fas fa-user-plus"></i></div>
                 <div class="card-info">
-                    <h2>95</h2>
+                    <h2>@Model.DocGiaMoiTrongThang.ToString("N0")</h2>
                     <p>Độc giả mới trong tháng</p>
                 </div>
             </div>
             <div class="card">
                 <div class="card-icon" style="color: #ffc107;"><i class="fas fa-plus-circle"></i></div>
                 <div class="card-info">
-                    <h2>215</h2>
+                    <h2>@Model.SachMoiDuocNhap.ToString("N0")</h2>
                     <p>Sách mới được nhập</p>
                 </div>
             </div>
@@ -88,31 +86,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Cấu trúc dữ liệu và giải thuật</td>
-                            <td>Lê Hữu Cường</td>
-                            <td>152</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Lập trình Hướng đối tượng</td>
-                            <td>Nguyễn Văn An</td>
-                            <td>138</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Mạng máy tính căn bản</td>
-                            <td>Trần Thị Bích</td>
-                            <td>115</td>
-                        </tr>
-                        <!-- Thêm các hàng khác nếu cần -->
+                        @foreach (var sach in Model.Top10SachDuocMuon)
+                        {
+                            <tr>
+                                <td>@sach.Hang</td>
+                                <td>@sach.TenSach</td>
+                                <td>@sach.TenTacGia</td>
+                                <td>@sach.LuotMuon.ToString("N0")</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
         </section>
-
     </main>
+
 </div>
 
 <!-- ======================= FOOTER ======================= -->
@@ -120,3 +108,58 @@
     <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
     <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
 </footer>
+
+@section scripts {
+    <!-- Thêm thư viện Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Dữ liệu cho biểu đồ Lượt mượn từ ViewModel
+            const loanLabels = @Html.Raw(Json.Encode(Model.BieuDoLuotMuon_Nhan));
+            const loanData = @Html.Raw(Json.Encode(Model.BieuDoLuotMuon_DuLieu));
+
+            const ctxLoan = document.getElementById('loanChart').getContext('2d');
+            const loanChart = new Chart(ctxLoan, {
+                type: 'line',
+                data: {
+                    labels: loanLabels,
+                    datasets: [{
+                        label: 'Lượt mượn',
+                        data: loanData,
+                        backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true } } }
+            });
+
+            // 2. Dữ liệu cho biểu đồ Thể loại từ ViewModel
+            const categoryLabels = @Html.Raw(Json.Encode(Model.BieuDoTheLoai_Nhan));
+            const categoryData = @Html.Raw(Json.Encode(Model.BieuDoTheLoai_DuLieu));
+
+            const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+            const categoryChart = new Chart(ctxCategory, {
+                type: 'pie', // Hoặc 'doughnut'
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        label: 'Số lượng sách',
+                        data: categoryData,
+                        backgroundColor: [
+                            'rgba(0, 123, 255, 0.8)',
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(220, 53, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(23, 162, 184, 0.8)',
+                            'rgba(108, 117, 125, 0.8)'
+                        ],
+                        hoverOffset: 4
+                    }]
+                }
+            });
+        });
+    </script>
+}

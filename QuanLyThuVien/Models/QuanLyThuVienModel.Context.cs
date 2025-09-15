@@ -37,5 +37,6 @@ namespace QuanLyThuVien.Models
         public virtual DbSet<TheMuonSach> TheMuonSaches { get; set; }
         public virtual DbSet<ThuThu> ThuThus { get; set; }
         public virtual DbSet<ViPham> ViPhams { get; set; }
+        public virtual DbSet<CauHinh> CauHinhs { get; set; }
     }
 }

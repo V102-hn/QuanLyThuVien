@@ -1,4 +1,4 @@
-﻿
+﻿@model IEnumerable<QuanLyThuVien.ViewModels.ViPhamViewModel>
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
@@ -43,30 +43,38 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>VP001</td>
-                        <td>Lê Hữu Cường</td>
-                        <td>Trả sách quá hạn</td>
-                        <td>30,000đ</td>
-                        <td>19/08/2025</td>
-                        <td><span class="status unpaid">Chưa thanh toán</span></td>
-                        <td class="action-buttons">
-                            <button class="btn btn-success btn-mark-paid"><i class="fas fa-check"></i> Đã trả</button>
-                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>VP002</td>
-                        <td>Phạm Thị Dung</td>
-                        <td>Làm hỏng sách</td>
-                        <td>150,000đ</td>
-                        <td>14/09/2025</td>
-                        <td><span class="status paid">Đã thanh toán</span></td>
-                        <td class="action-buttons">
-                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
+                    <!-- Dùng vòng lặp để hiển thị dữ liệu động -->
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.MaViPham</td>
+                            <td>@item.TenDocGia</td>
+                            <td>@item.LoaiViPham</td>
+                            <td>@item.SoTienPhat</td>
+                            <td>@item.NgayGhiNhan.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <!-- Hiển thị Trạng thái và class CSS tương ứng -->
+                                @if (item.TrangThai == "Đã thanh toán")
+                                {
+                                    <span class="status paid">Đã thanh toán</span>
+                                }
+                                else
+                                {
+                                    <span class="status unpaid">Chưa thanh toán</span>
+                                }
+                            </td>
+                            <td class="action-buttons">
+                                <!-- Chỉ hiển thị nút 'Đã trả' khi chưa thanh toán -->
+                                @if (item.TrangThai == "Chưa thanh toán")
+                                {
+                                    <button class="btn btn-success btn-mark-paid"><i class="fas fa-check"></i> Đã trả</button>
+                                }
+                                <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
+
             </table>
         </section>
     </main>

@@ -12,7 +12,7 @@ namespace QuanLyThuVien.Controllers
     public class BookController : Controller
     {
         // Khởi tạo đối tượng DbContext để làm việc với CSDL
-        private QuanLyThuVienEntities db = new QuanLyThuVienEntities(); // Tên này có thể khác tùy theo cách bạn đặt tên model
+        private readonly QuanLyThuVienEntities db = new QuanLyThuVienEntities(); // Tên này có thể khác tùy theo cách bạn đặt tên model
 
         // GET: Book
         public ActionResult Index()

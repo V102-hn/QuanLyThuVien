@@ -1,4 +1,5 @@
-﻿
+﻿@*<(1) Khai báo kiểu dữ liệu mà View sẽ nhận>*@
+@model IEnumerable<QuanLyThuVien.Models.DocGia>
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
@@ -34,28 +35,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>DG001</td>
-                        <td>Nguyễn Văn An</td>
-                        <td>22T1</td>
-                        <td>an.nv@email.com</td>
-                        <td><span class="status active-card">Hoạt động</span></td>
-                        <td class="action-buttons">
-                            <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>DG002</td>
-                        <td>Trần Thị Bích</td>
-                        <td>21HDA</td>
-                        <td>bich.tt@email.com</td>
-                        <td><span class="status locked-card">Bị khóa</span></td>
-                        <td class="action-buttons">
-                            <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
+                    <!-- (2) Dùng vòng lặp foreach để hiển thị dữ liệu -->
+                    @foreach (var docgia in Model)
+                    {
+                        <tr>
+                            <td>@docgia.MaDocGia</td>
+                            <td>@docgia.HoTen</td>
+                            <td>@docgia.Lop</td>
+                            <td>@docgia.Email</td>
+                            <td>
+                                <!-- (3) Dùng logic if-else để hiển thị trạng thái -->
+                                @if (docgia.DaXoa == true)
+                                {
+                                    <span class="status locked-card">Bị khóa</span>
+                                }
+                                else
+                                {
+                                    <span class="status active-card">Hoạt động</span>
+                                }
+                            </td>
+                            <td class="action-buttons">
+                                <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
             <div class="pagination">

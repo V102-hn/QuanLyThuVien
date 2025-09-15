@@ -1,8 +1,11 @@
-﻿
+﻿@* BẮT BUỘC: Khai báo model mà View này sẽ sử dụng *@
+@model QuanLyThuVien.ViewModels.AdminDashboardViewModel
+
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Bảng điều khiển";
     Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
 }
+
 @Html.Action("HeaderPartialView", "Admin")
 <!-- KẾT THÚC PHẦN TÁI SỬ DỤNG -->
 <!-- BỐ CỤC MỚI CHO TRANG ADMIN -->
@@ -16,28 +19,32 @@
             <div class="card">
                 <i class="fas fa-book card-icon" style="color: #007bff;"></i>
                 <div class="card-info">
-                    <h2>12,560</h2>
+                    @* Dữ liệu động từ ViewModel *@
+                    <h2>@Model.TongSoSach.ToString("N0")</h2>
                     <p>Tổng số sách</p>
                 </div>
             </div>
             <div class="card">
                 <i class="fas fa-users card-icon" style="color: #28a745;"></i>
                 <div class="card-info">
-                    <h2>3,450</h2>
+                    @* Dữ liệu động từ ViewModel *@
+                    <h2>@Model.TongSoDocGia.ToString("N0")</h2>
                     <p>Tổng số độc giả</p>
                 </div>
             </div>
             <div class="card">
                 <i class="fas fa-book-reader card-icon" style="color: #ffc107;"></i>
                 <div class="card-info">
-                    <h2>789</h2>
+                    @* Dữ liệu động từ ViewModel *@
+                    <h2>@Model.SachDangMuon.ToString("N0")</h2>
                     <p>Sách đang được mượn</p>
                 </div>
             </div>
             <div class="card">
                 <i class="fas fa-exclamation-triangle card-icon" style="color: #dc3545;"></i>
                 <div class="card-info">
-                    <h2>56</h2>
+                    @* Dữ liệu động từ ViewModel *@
+                    <h2>@Model.SachQuaHan.ToString("N0")</h2>
                     <p>Sách quá hạn</p>
                 </div>
             </div>
@@ -56,27 +63,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>S0123</td>
-                        <td>Lập trình Hướng đối tượng</td>
-                        <td>Nguyễn Văn An</td>
-                        <td>12/09/2025</td>
-                        <td><span class="status borrowed">Đang mượn</span></td>
-                    </tr>
-                    <tr>
-                        <td>S0456</td>
-                        <td>Cấu trúc dữ liệu và giải thuật</td>
-                        <td>Trần Thị Bích</td>
-                        <td>11/09/2025</td>
-                        <td><span class="status returned">Đã trả</span></td>
-                    </tr>
-                    <tr>
-                        <td>S0789</td>
-                        <td>An toàn thông tin</td>
-                        <td>Lê Hữu Cường</td>
-                        <td>05/08/2025</td>
-                        <td><span class="status overdue">Quá hạn</span></td>
-                    </tr>
+                    @* Dùng vòng lặp để hiển thị danh sách hoạt động từ ViewModel *@
+                    @foreach (var item in Model.HoatDongGanDay)
+                    {
+                        <tr>
+                            <td>@item.MaSach</td>
+                            <td>@item.TenSach</td>
+                            <td>@item.TenDocGia</td>
+                            <td>@item.NgayMuon.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @{
+                                    // Tự động gán class CSS dựa vào trạng thái
+                                    string statusClass = "";
+                                    if (item.TrangThai == "Đã trả") { statusClass = "returned"; }
+                                    else if (item.TrangThai == "Đang mượn") { statusClass = "borrowed"; }
+                                    else { statusClass = "overdue"; } // Giả sử trạng thái khác là "Quá hạn"
+                                }
+                                <span class="status @statusClass">@item.TrangThai</span>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </section>

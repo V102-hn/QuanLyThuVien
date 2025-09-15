@@ -1,4 +1,7 @@
-﻿
+﻿@*< !--(1) Khai báo Model mà View này sẽ nhận -->*@
+@model IEnumerable<QuanLyThuVien.Models.TacGia>
+
+
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
@@ -32,24 +35,29 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>TG001</td>
-                        <td>Lê Hữu Cường</td>
-                        <td>cuong.lh@email.com</td>
-                        <td class="action-buttons">
-                            <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>TG002</td>
-                        <td>Nguyễn Văn An</td>
-                        <td>an.nv@email.com</td>
-                        <td class="action-buttons">
-                            <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
+                    <!-- (2) Dùng vòng lặp để duyệt qua danh sách tác giả -->
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center">Không có dữ liệu tác giả.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.MaTacGia</td>
+                                <td>@item.TenTacGia</td>
+                                <td>@item.TieuSu</td> <!-- (3) Hiển thị dữ liệu từ CSDL -->
+                                <td class="action-buttons">
+                                    <!-- Sẽ thêm link cho các nút này sau -->
+                                    <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        }
+                    }
                 </tbody>
             </table>
         </section>
