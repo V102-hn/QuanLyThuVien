@@ -858,3 +858,44 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+/* --- LOGIC FOR REAL-TIME CLOCK --- */
+
+// Đảm bảo code chỉ chạy khi toàn bộ trang đã được tải
+document.addEventListener('DOMContentLoaded', function () {
+    // Tìm phần tử đồng hồ bằng ID chúng ta đã đặt ở Bước 1
+    const clockElement = document.getElementById('real-time-clock');
+
+    // Nếu không tìm thấy phần tử đồng hồ trên trang, không làm gì cả
+    if (!clockElement) return;
+
+    // Hàm chính để cập nhật đồng hồ
+    function updateClock() {
+        // Mảng chứa tên các thứ trong tuần bằng tiếng Việt
+        const daysOfWeek = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+
+        // Lấy thời gian hiện tại
+        const now = new Date();
+
+        // Lấy các thành phần của ngày và giờ
+        const dayName = daysOfWeek[now.getDay()]; // Lấy tên thứ
+        const day = String(now.getDate()).padStart(2, '0'); // Lấy ngày và thêm số 0 nếu cần
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0 nên phải +1
+        const year = now.getFullYear();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        // Tạo chuỗi thời gian hoàn chỉnh theo đúng định dạng bạn muốn
+        // (Lưu ý: GMT+7 là cố định cho múi giờ Việt Nam)
+        const formattedTime = `${dayName}, ${day}/${month}/${year}, ${hours}:${minutes} GMT+7`;
+
+        // Cập nhật nội dung của phần tử đồng hồ trên trang web
+        clockElement.textContent = formattedTime;
+    }
+
+    // Chạy hàm updateClock() ngay lập tức khi trang vừa tải xong để hiển thị thời gian đúng ngay
+    updateClock();
+
+    // Sau đó, cứ mỗi 1 giây (1000 mili giây) thì gọi lại hàm updateClock() để cập nhật
+    setInterval(updateClock, 1000);
+});

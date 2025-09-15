@@ -263,10 +263,8 @@
     <Content Include="Views\Layout\LayoutNguoiDung.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Admin\Book.cshtml" />
     <Content Include="Views\Readers\Index.cshtml" />
     <Content Include="Views\Admin\HeaderPartialView.cshtml" />
-    <Content Include="Views\Admin\Reader.cshtml" />
     <Content Include="Views\Shared\HeaderPartialView.cshtml" />
     <Content Include="Views\Admin\SidebarPartiView.cshtml" />
     <Content Include="Views\Shared\_FooterPartial.cshtml" />
