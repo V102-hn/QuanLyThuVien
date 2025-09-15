@@ -1,19 +1,14 @@
-﻿@model IEnumerable<QuanLyThuVien.Models.Sach>
+﻿@model QuanLyThuVien.ViewModels.SachViewModel
 @{
-    ViewBag.Title = "Book";
+    ViewBag.Title = "Quản lý Sách";
     Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
 }
 
-<!-- ======================= PHẦN TÁI SỬ DỤNG ======================= -->
 @Html.Action("HeaderPartialView", "Admin")
-<!-- ===================== KẾT THÚC PHẦN TÁI SỬ DỤNG ===================== -->
-
 
 <div class="admin-container">
-    <!-- ======================= SIDEBAR (THANH ĐIỀU HƯỚNG BÊN TRÁI) ======================= -->
     @Html.Action("SidebarPartiView", "Admin")
 
-    <!-- ======================= NỘI DUNG CHÍNH CỦA TRANG ======================= -->
     <main class="admin-main-content">
         <h1><i class="fas fa-book"></i> Quản lý Sách</h1>
 
@@ -23,7 +18,7 @@
         </div>
 
         <section class="data-table-section">
-            <table>
+            <table id="sach-table">
                 <thead>
                     <tr>
                         <th>Mã Sách</th>
@@ -35,95 +30,69 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        // Dòng này đã được sửa, bỏ ký tự @ ở đầu
-                        foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>@item.MaSach</td>
-                                <td>@item.TenSach</td>
-
-                                @* Hiển thị Tên Tác Giả, nếu Tác Giả null thì hiển thị chuỗi rỗng *@
-                                <td>@(item.TacGia?.TenTacGia)</td>
-
-                                <td>@item.SoLuongTon</td>
-
-                                @* Hiển thị Tên Nhà Xuất Bản, nếu NXB null thì hiển thị chuỗi rỗng *@
-                                <td>@(item.NhaXuatBan?.TenNXB)</td>
-
-                                <td class="action-buttons">
-                                    <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
+                    @foreach (var item in Model.DanhSachSach)
                     {
                         <tr>
-                            <td colspan="6" style="text-align:center;">Không có dữ liệu để hiển thị.</td>
+                            <td>@item.MaSach</td>
+                            <td>@item.TenSach</td>
+                            <td>@(item.TacGia?.TenTacGia)</td>
+                            <td>@item.SoLuongTon</td>
+                            <td>@(item.NhaXuatBan?.TenNXB)</td>
+                            <td class="action-buttons">
+                                <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                            </td>
                         </tr>
                     }
                 </tbody>
             </table>
-            <div class="pagination">
-                <a href="#">&laquo;</a>
-                <a href="#" class="active">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">&raquo;</a>
-            </div>
         </section>
     </main>
 </div>
 
-<!-- ======================= MODAL (CỬA SỔ POP-UP) ĐỂ THÊM/SỬA SÁCH ======================= -->
+<!-- MODAL ĐỂ THÊM/SỬA SÁCH (Đã cập nhật để nhận dữ liệu động) -->
 <div id="book-modal" class="modal">
     <div class="modal-content large">
         <span class="close-book-modal">&times;</span>
         <h2 id="book-modal-title">Thêm Sách Mới</h2>
+
+        @* Quan trọng: Form sẽ được gửi bằng AJAX *@
         <form id="book-form">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="ma-sach">Mã Sách (ISBN):</label>
-                    <input type="text" id="ma-sach" name="ma-sach" required>
-                </div>
-                <div class="form-group">
                     <label for="ten-sach-modal">Tên Sách:</label>
-                    <input type="text" id="ten-sach-modal" name="ten-sach" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="tac-gia">Tác Giả:</label>
-                    <input type="text" id="tac-gia" name="tac-gia" required>
+                    <input type="text" id="ten-sach-modal" name="TenSach" required>
                 </div>
                 <div class="form-group">
                     <label for="so-luong">Số Lượng Tồn:</label>
-                    <input type="number" id="so-luong" name="so-luong" required min="0">
+                    <input type="number" id="so-luong" name="SoLuongTon" required min="0">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="nxb">Nhà Xuất Bản:</label>
-                    <select id="nxb" name="nxb" required><option value="">-- Chọn NXB --</option><option>NXB Khoa học và Kỹ thuật</option><option>NXB Giáo dục</option><option>NXB Bách Khoa</option></select>
+                    @* Sẽ cần thêm chức năng tìm kiếm/thêm tác giả sau *@
+                    <label for="tac-gia">Tác Giả (Nhập Mã Tác giả):</label>
+                    <input type="number" id="tac-gia" name="MaTacGia" required>
                 </div>
                 <div class="form-group">
+                    <label for="nxb">Nhà Xuất Bản:</label>
+                    @Html.DropDownList("MaNXB", Model.DanhSachNXB, "-- Chọn NXB --", new { @class = "form-control", id = "nxb", required = "required" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group full-width">
                     <label for="the-loai">Thể Loại:</label>
-                    <select id="the-loai" name="the-loai" required><option value="">-- Chọn Thể loại --</option><option>Lập trình</option><option>Toán học</option><option>An toàn thông tin</option></select>
+                    @* Quan trọng: name="selectedTheLoaiIds" phải khớp với tham số trong Action Create *@
+                    @Html.ListBox("selectedTheLoaiIds", new MultiSelectList(Model.DanhSachTheLoai, "Value", "Text"), new { id = "the-loai", @class = "form-control", multiple = "multiple", required = "required" })
                 </div>
             </div>
             <div class="form-group">
                 <label for="mo-ta">Mô Tả Ngắn:</label>
-                <textarea id="mo-ta" name="mo-ta" rows="4"></textarea>
+                <textarea id="mo-ta" name="MoTa" rows="4"></textarea>
             </div>
             <button type="submit" class="submit-btn">Lưu Lại</button>
         </form>
     </div>
 </div>
 
-<!-- ======================= FOOTER VÀ CÁC MODAL KHÁC ======================= -->
-
 @Html.Partial("_FooterPartial")
-

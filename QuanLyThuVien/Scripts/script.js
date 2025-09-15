@@ -150,76 +150,95 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// --- LOGIC FOR QUAN-LY-SACH.HTML ---
+// --- LOGIC FOR QUAN-LY-SACH.HTML (PHIÊN BẢN HOÀN CHỈNH) ---
 
-document.addEventListener('DOMContentLoaded', function () {
+// Sử dụng cú pháp $(document).ready() của jQuery để đảm bảo mọi thứ đã sẵn sàng
+$(document).ready(function () {
     const bookModal = document.getElementById('book-modal');
-    if (!bookModal) return; // Chỉ chạy code này nếu có modal sách
+    // Chỉ chạy code này nếu có modal sách trên trang
+    if (!bookModal) return;
 
+    // Khai báo tất cả các phần tử cần thiết MỘT LẦN DUY NHẤT
     const addBookBtn = document.getElementById('add-book-btn');
     const closeBookModalBtn = document.querySelector('.close-book-modal');
     const bookModalTitle = document.getElementById('book-modal-title');
     const bookForm = document.getElementById('book-form');
 
-    // Hàm mở modal sách
+    // --- CÁC HÀM HỖ TRỢ ---
     function openBookModal() {
         bookModal.classList.add('show-modal');
     }
 
-    // Hàm đóng modal sách
     function closeBookModal() {
         bookModal.classList.remove('show-modal');
     }
 
+    // --- GẮN CÁC SỰ KIỆN ---
+
     // Sự kiện khi bấm nút "Thêm Sách Mới"
-    addBookBtn.addEventListener('click', function () {
+    $(addBookBtn).on('click', function () {
         bookModalTitle.textContent = "Thêm Sách Mới";
         bookForm.reset();
-        document.getElementById('ma-sach').readOnly = false; // Cho phép sửa mã sách khi thêm mới
         openBookModal();
     });
 
-    // Sự kiện khi bấm các nút "Sửa"
-    document.querySelectorAll('.btn-edit').forEach(button => {
-        button.addEventListener('click', function () {
-            bookModalTitle.textContent = "Chỉnh sửa Thông tin Sách";
-
-            // Lấy thông tin từ hàng của bảng và điền vào form (phần mô phỏng)
-            const row = this.closest('tr');
-            document.getElementById('ma-sach').value = row.cells[0].textContent;
-            document.getElementById('ma-sach').readOnly = true; // Không cho sửa Mã sách
-            document.getElementById('ten-sach-modal').value = row.cells[1].textContent;
-            document.getElementById('tac-gia').value = row.cells[2].textContent;
-            document.getElementById('so-luong').value = row.cells[3].textContent;
-            // Cần logic phức tạp hơn để chọn đúng NXB và Thể loại trong select
-
-            openBookModal();
-        });
+    // Sự kiện khi bấm các nút "Sửa" (vẫn là mô phỏng)
+    $('.btn-edit').on('click', function () {
+        alert('Chức năng "Sửa" đang được phát triển!');
+        // bookModalTitle.textContent = "Chỉnh sửa Thông tin Sách";
+        // ... (code mô phỏng cũ có thể giữ lại hoặc xóa đi tùy bạn)
     });
 
-    // Sự kiện khi bấm nút "Xóa"
-    document.querySelectorAll('.btn-delete').forEach(button => {
-        button.addEventListener('click', function () {
-            if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
-                this.closest('tr').remove();
-                alert('Xóa sách thành công! (Mô phỏng)');
-            }
-        });
+    // Sự kiện khi bấm nút "Xóa" (vẫn là mô phỏng)
+    $('.btn-delete').on('click', function () {
+        if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
+            alert('Chức năng "Xóa" cần được kết nối với backend! (Mô phỏng)');
+            // this.closest('tr').remove(); // Tạm thời vô hiệu hóa để tránh xóa nhầm trên giao diện
+        }
     });
 
     // Các sự kiện đóng modal
-    closeBookModalBtn.addEventListener('click', closeBookModal);
-    bookModal.addEventListener('click', function (event) {
+    $(closeBookModalBtn).on('click', closeBookModal);
+    $(bookModal).on('click', function (event) {
         if (event.target === bookModal) {
             closeBookModal();
         }
     });
 
-    // Sự kiện submit form
-    bookForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        alert('Lưu thông tin sách thành công! (Mô phỏng)');
-        closeBookModal();
+    // === PHẦN QUAN TRỌNG NHẤT: XỬ LÝ SUBMIT FORM BẰNG AJAX ===
+    $('#book-form').on('submit', function (event) {
+        // In ra console để kiểm tra xem sự kiện có được bắt không
+        console.log("Form submit event captured!");
+
+        event.preventDefault(); // Ngăn form submit theo cách truyền thống
+
+        if (!this.checkValidity()) {
+            this.reportValidity();
+            return;
+        }
+
+        var formData = $(this).serialize();
+        console.log("Form Data:", formData); // In dữ liệu form ra để kiểm tra
+
+        // Gửi AJAX request đến server
+        $.ajax({
+            url: '/Book/Create',
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    closeBookModal();
+                    location.reload(); // Tải lại trang để thấy dữ liệu mới
+                } else {
+                    alert('Lỗi: ' + response.message);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error("AJAX Error:", textStatus, errorThrown, jqXHR.responseText);
+                alert('Không thể kết nối đến server. Vui lòng kiểm tra console (F12) để biết thêm chi tiết.');
+            }
+        });
     });
 });
 
