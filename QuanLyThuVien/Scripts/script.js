@@ -22,134 +22,103 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 // --- LOGIC CHO CỬA SỔ ĐĂNG NHẬP (MODAL) ---
-
 document.addEventListener('DOMContentLoaded', function () {
-    // Lấy các phần tử cần thiết
+    // ... (Giữ nguyên code lấy phần tử và mở/đóng modal) ...
     const loginModal = document.getElementById('login-modal');
     const loginTriggerBtn = document.getElementById('login-trigger-btn');
     const closeBtn = document.querySelector('.close-btn');
     const modalLoginForm = document.getElementById('modal-login-form');
 
-    // Hàm để mở modal
-    function openModal() {
-        if (loginModal) {
-            loginModal.classList.add('show-modal');
-        }
-    }
+    function openModal() { if (loginModal) loginModal.classList.add('show-modal'); }
+    function closeModal() { if (loginModal) loginModal.classList.remove('show-modal'); }
 
-    // Hàm để đóng modal
-    function closeModal() {
-        if (loginModal) {
-            loginModal.classList.remove('show-modal');
-        }
-    }
-
-    // Gắn sự kiện click cho nút "Đăng nhập" ở header
-    if (loginTriggerBtn) {
-        loginTriggerBtn.addEventListener('click', openModal);
-    }
-
-    // Gắn sự kiện click cho nút đóng (dấu X)
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeModal);
-    }
-
-    // Gắn sự kiện click để đóng modal khi bấm ra ngoài vùng nội dung
-    if (loginModal) {
-        loginModal.addEventListener('click', function (event) {
-            if (event.target === loginModal) {
-                closeModal();
-            }
-        });
-    }
+    if (loginTriggerBtn) loginTriggerBtn.addEventListener('click', openModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (loginModal) loginModal.addEventListener('click', function (event) { if (event.target === loginModal) closeModal(); });
 
     // Xử lý sự kiện submit form đăng nhập
     if (modalLoginForm) {
         modalLoginForm.addEventListener('submit', function (event) {
             event.preventDefault(); // Ngăn trang tải lại
-            const username = document.getElementById('username').value;
-            alert('Xin chào ' + username + '!\n(Đây là giao diện tĩnh, chức năng đăng nhập thật cần back-end.)');
-            closeModal(); // Đóng modal sau khi đăng nhập (mô phỏng)
+
+            var formData = $(this).serialize();
+
+            $.ajax({
+                url: '/Account/Login', // URL đến Action Login
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        alert('Đăng nhập thành công!');
+                        // Chuyển hướng đến trang được trả về từ server
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        alert('Lỗi: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('Không thể kết nối đến server. Vui lòng thử lại.');
+                }
+            });
         });
     }
 });
-// --- LOGIC CHO CỬA SỔ ĐĂNG KÝ (MODAL) ---
 
+// --- LOGIC CHO CỬA SỔ ĐĂNG KÝ (MODAL) ---
 document.addEventListener('DOMContentLoaded', function () {
-    // Lấy thêm các phần tử cần thiết cho modal đăng ký
+    // ... (Giữ nguyên code lấy phần tử và chuyển đổi giữa các modal) ...
     const signupModal = document.getElementById('signup-modal');
     const closeBtnSignup = document.querySelector('.close-btn-signup');
     const modalSignupForm = document.getElementById('modal-signup-form');
     const showSignupLink = document.getElementById('show-signup-modal');
     const showLoginLink = document.getElementById('show-login-modal');
-
-    // Lấy lại các phần tử của modal đăng nhập để xử lý chuyển đổi
     const loginModal = document.getElementById('login-modal');
 
-    // Hàm để mở modal đăng ký
-    function openSignupModal() {
-        if (signupModal) {
-            signupModal.classList.add('show-modal');
-        }
-    }
+    function openSignupModal() { if (signupModal) signupModal.classList.add('show-modal'); }
+    function closeSignupModal() { if (signupModal) signupModal.classList.remove('show-modal'); }
+    function closeLoginModal() { if (loginModal) loginModal.classList.remove('show-modal'); }
+    function openLoginModal() { if (loginModal) loginModal.classList.add('show-modal'); }
 
-    // Hàm để đóng modal đăng ký
-    function closeSignupModal() {
-        if (signupModal) {
-            signupModal.classList.remove('show-modal');
-        }
-    }
-
-    // Hàm đóng modal đăng nhập (đã có ở trên, nhưng khai báo lại để chắc chắn)
-    function closeLoginModal() {
-        if (loginModal) {
-            loginModal.classList.remove('show-modal');
-        }
-    }
-
-    // Gắn sự kiện click cho link "Đăng ký tại đây"
-    if (showSignupLink) {
-        showSignupLink.addEventListener('click', function (event) {
-            event.preventDefault();
-            closeLoginModal(); // Đóng modal đăng nhập
-            openSignupModal(); // Mở modal đăng ký
-        });
-    }
-
-    // Gắn sự kiện click cho link "Đăng nhập ngay"
-    if (showLoginLink) {
-        showLoginLink.addEventListener('click', function (event) {
-            event.preventDefault();
-            closeSignupModal(); // Đóng modal đăng ký
-            openModal(); // Mở modal đăng nhập (hàm openModal đã có từ trước)
-        });
-    }
-
-    // Gắn sự kiện click cho nút đóng (dấu X) của modal đăng ký
-    if (closeBtnSignup) {
-        closeBtnSignup.addEventListener('click', closeSignupModal);
-    }
-
-    // Gắn sự kiện click để đóng modal đăng ký khi bấm ra ngoài
-    if (signupModal) {
-        signupModal.addEventListener('click', function (event) {
-            if (event.target === signupModal) {
-                closeSignupModal();
-            }
-        });
-    }
+    if (showSignupLink) { showSignupLink.addEventListener('click', function (e) { e.preventDefault(); closeLoginModal(); openSignupModal(); }); }
+    if (showLoginLink) { showLoginLink.addEventListener('click', function (e) { e.preventDefault(); closeSignupModal(); openLoginModal(); }); }
+    if (closeBtnSignup) closeBtnSignup.addEventListener('click', closeSignupModal);
+    if (signupModal) { signupModal.addEventListener('click', function (e) { if (e.target === signupModal) closeSignupModal(); }); }
 
     // Xử lý sự kiện submit form đăng ký
     if (modalSignupForm) {
         modalSignupForm.addEventListener('submit', function (event) {
             event.preventDefault(); // Ngăn trang tải lại
-            const fullname = document.getElementById('signup-fullname').value;
-            alert('Chào mừng ' + fullname + '!\nĐăng ký thành công.\n(Đây là giao diện tĩnh, chức năng thật cần back-end.)');
-            closeSignupModal(); // Đóng modal sau khi đăng ký thành công
+
+            // Kiểm tra mật khẩu xác nhận phía client
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            if (password !== confirmPassword) {
+                alert('Mật khẩu xác nhận không khớp!');
+                return;
+            }
+
+            var formData = $(this).serialize();
+
+            $.ajax({
+                url: '/Account/Register', // URL đến Action Register
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        closeSignupModal(); // Đóng modal đăng ký
+                        openLoginModal();   // Mở modal đăng nhập để người dùng đăng nhập
+                    } else {
+                        alert('Lỗi: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('Không thể kết nối đến server. Vui lòng thử lại.');
+                }
+            });
         });
     }
 });
-
 // --- LOGIC FOR QUAN-LY-SACH.HTML (PHIÊN BẢN HOÀN CHỈNH) ---
 
 // Sử dụng cú pháp $(document).ready() của jQuery để đảm bảo mọi thứ đã sẵn sàng

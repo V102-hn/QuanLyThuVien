@@ -25,7 +25,24 @@
     </div>
     <!-- THAY THẾ PHẦN LOGIN CŨ BẰNG NÚT NÀY -->
     <div class="header-right">
-        <button id="login-trigger-btn" class="login-button">Đăng nhập</button>
+        @if (Session["UserInfo"] != null)
+        {
+            // Nếu người dùng đã đăng nhập
+            <div class="profile-dropdown">
+                <button class="login-button">
+                    Xin chào, @Session["UserFullName"] <i class="fas fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#">Thông tin cá nhân</a>
+                    <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            // Nếu người dùng chưa đăng nhập
+            <button id="login-trigger-btn" class="login-button">Đăng nhập</button>
+        }
     </div>
 </header>
 
@@ -148,22 +165,23 @@
         <form id="modal-signup-form">
             <div class="form-group">
                 <label for="signup-fullname">Họ và tên:</label>
-                <input type="text" id="signup-fullname" name="fullname" required placeholder="Ví dụ: Nguyễn Văn An">
+                <!-- Sửa ở đây: name="fullname" -> name="HoTen" -->
+                <input type="text" id="signup-fullname" name="HoTen" required placeholder="Ví dụ: Nguyễn Văn An">
             </div>
             <div class="form-group">
                 <label for="signup-username">Tên đăng nhập (Email hoặc Mã SV):</label>
-                <input type="text" id="signup-username" name="username" required placeholder="Nhập email hoặc mã sinh viên">
+                <input type="text" id="signup-username" name="Username" required placeholder="Nhập email hoặc mã sinh viên">
             </div>
             <div class="form-group">
                 <label for="signup-password">Mật khẩu:</label>
-                <input type="password" id="signup-password" name="password" required placeholder="Tối thiểu 8 ký tự">
+                <input type="text" id="signup-password" name="Password" required placeholder="Tối thiểu 8 ký tự">
             </div>
             <div class="form-group">
                 <label for="signup-confirm-password">Xác nhận Mật khẩu:</label>
-                <input type="password" id="signup-confirm-password" name="confirm_password" required placeholder="Nhập lại mật khẩu">
+                <!-- Sửa ở đây: name="confirm_password" -> name="ConfirmPassword" -->
+                <input type="password" id="signup-confirm-password" name="ConfirmPassword" required placeholder="Nhập lại mật khẩu">
             </div>
             <button type="submit" class="submit-btn">Đăng ký</button>
-            <!-- SỬA LẠI DÒNG NÀY TRONG MODAL ĐĂNG KÝ -->
             <p class="login-link">Đã có tài khoản? <a href="#" id="show-login-modal">Đăng nhập ngay</a></p>
         </form>
     </div>
