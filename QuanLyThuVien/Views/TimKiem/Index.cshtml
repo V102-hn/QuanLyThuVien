@@ -1,0 +1,148 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+    <!-- ======================= PHẦN TÁI SỬ DỤNG TỪ BỐ CỤC CHUNG ======================= -->
+    <div class="top-bar">
+        <span id="real-time-clock">Thứ Bảy, 13/9/2025, 19:34 GMT+7</span>
+        <div class="top-links">
+            <a href="#">Trang chủ</a> |
+            <a href="#">Thư điện tử</a> |
+            <a href="#">Thư viện điện tử</a> |
+            <a href="ket-qua-tim-kiem.html">Liên hệ</a> |
+            <a href="#">English</a>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo">
+            <a href="trangchu.html">
+                <img src="logo.png" alt="Logo MUCE">
+            </a>
+        </div>
+        <div class="title"></div>
+        <div class="header-right">
+            <button id="login-trigger-btn" class="login-button">Đăng nhập</button>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#"><i class="fas fa-home"></i> GIỚI THIỆU</a></li>
+            <li><a href="thu-vien-so.html"><i class="fas fa-book-open"></i> THƯ VIỆN SỐ</a></li>
+            <li><a href="#">NỘI QUY THƯ VIỆN</a></li>
+            <li><a href="#">GIỚI THIỆU SÁCH</a></li>
+            <li><a href="#">HƯỚNG DẪN TRA CỨU</a></li>
+            <li><a href="#">BẠN ĐỌC TRA SÁCH</a></li>
+            <li><a href="#">THÔNG BÁO</a></li>
+        </ul>
+    </nav>
+    <!-- ======================= KẾT THÚC PHẦN TÁI SỬ DỤNG ======================= -->
+
+    <div class="container">
+        <!-- === CỘT NỘI DUNG CHÍNH === -->
+        <main>
+            <div class="search-results-header">
+                <h3>Kết quả tìm kiếm cho từ khóa: "<span>Clean Code</span>"</h3>
+                <p>Tìm thấy 2 kết quả phù hợp.</p>
+            </div>
+
+            <!-- === DANH SÁCH KẾT QUẢ === -->
+            <div class="results-list">
+                <!-- Mẫu 1 cuốn sách -->
+                <div class="book-card">
+                    <img class="book-card-image" src="img/cleancode.jpg" alt="Clean Code">
+                    <div class="book-card-content">
+                        <h4><a href="#">Clean Code</a></h4>
+                        <p class="author">Tác giả: Robert C. Martin</p>
+                        <p class="description">
+                            Cẩm nang về cách viết mã sạch, dễ đọc và dễ bảo trì, một cuốn sách không thể thiếu cho bất kỳ lập trình viên chuyên nghiệp nào.
+                        </p>
+                        <div class="book-card-status available">
+                            <i class="fas fa-check-circle"></i> Có sẵn
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mẫu 1 cuốn sách khác -->
+                <div class="book-card">
+                    <img class="book-card-image" src="img/the_clean_.jpg" alt="The Clean Coder">
+                    <div class="book-card-content">
+                        <h4><a href="#">The Clean Coder: A Code of Conduct for Professional Programmers</a></h4>
+                        <p class="author">Tác giả: Robert C. Martin</p>
+                        <p class="description">
+                            Cuốn sách về quy tắc ứng xử cho các lập trình viên chuyên nghiệp, tập trung vào kỷ luật, trách nhiệm và đạo đức nghề nghiệp.
+                        </p>
+                        <div class="book-card-status unavailable">
+                            <i class="fas fa-times-circle"></i> Đã được mượn hết
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trường hợp không tìm thấy kết quả (bỏ comment để sử dụng) -->
+                <!--
+                <div class="no-results">
+                    <i class="fas fa-search" style="font-size: 40px; color: #ccc;"></i>
+                    <h4 style="margin-top: 20px;">Không tìm thấy kết quả nào</h4>
+                    <p>Vui lòng thử lại với một từ khóa khác hoặc kiểm tra lại chính tả.</p>
+                </div>
+                -->
+            </div>
+
+            <!-- === PHÂN TRANG === -->
+            <div class="pagination" style="justify-content: center; margin-top: 25px;">
+                <a href="#">&laquo;</a>
+                <a href="#" class="active">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                <a href="#">&raquo;</a>
+            </div>
+        </main>
+
+        <!-- === CỘT PHỤ BÊN PHẢI (SIDEBAR) === -->
+        <aside>
+            <!-- BỘ LỌC KẾT QUẢ - PHẦN MỚI -->
+            <div class="sidebar-box filter-box">
+                <h5><i class="fas fa-filter"></i> Lọc kết quả</h5>
+                <div class="filter-content">
+                    <strong>Theo Chuyên ngành:</strong>
+                    <ul>
+                        <li><label><input type="checkbox" name="category" value="1"> Công nghệ thông tin</label></li>
+                        <li><label><input type="checkbox" name="category" value="3"> Kỹ năng sống</label></li>
+                    </ul>
+                    <strong style="margin-top: 15px; display: block;">Theo Nhà xuất bản:</strong>
+                    <ul>
+                        <li><label><input type="checkbox" name="publisher" value="1"> Nhà xuất bản Trẻ</label></li>
+                        <li><label><input type="checkbox" name="publisher" value="4"> Alpha Books</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tái sử dụng các box khác từ trang chủ -->
+            <div class="sidebar-box">
+                <h5>DANH MỤC SÁCH MỚI</h5>
+                <div class="book-item">
+                    <img src="img/thiet_ke_o_to.jpg" alt="Bìa sách">
+                    <div>
+                        <p class="book-title">THIẾT KẾ ĐƯỜNG Ô TÔ</p>
+                        <p class="book-author">Tác giả: Ths. Lê Đức...</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ======================= MODALS VÀ FOOTER (Tái sử dụng) ======================= -->
+    <div id="login-modal" class="modal">
+        <!-- ... nội dung modal đăng nhập ... -->
+    </div>
+    <div id="signup-modal" class="modal">
+        <!-- ... nội dung modal đăng ký ... -->
+    </div>
+
+    <footer>
+        <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
+        <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
+    </footer>

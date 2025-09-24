@@ -91,6 +91,41 @@ namespace QuanLyThuVien.Controllers
             }
         }
 
+        // POST: Book/Delete/5
+        [HttpPost]
+        public ActionResult Delete(int id)
+        {
+            try
+            {
+                // 1. Tìm sách trong database
+                var sach = db.Saches.Find(id);
+
+
+                // 2. Kiểm tra xem sách có tồn tại không
+                if (sach == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy sách để xóa." });
+                }
+
+
+                // 3. Thực hiện "xóa mềm" - Cập nhật trạng thái DaXoa
+                sach.DaXoa = true;
+
+
+                // 4. Lưu thay đổi vào database
+                db.SaveChanges();
+
+
+                // 5. Trả về kết quả thành công cho AJAX
+                return Json(new { success = true, message = "Xóa sách thành công!" });
+            }
+            catch (Exception ex)
+            {
+                // Bắt lỗi và trả về thông báo lỗi
+                return Json(new { success = false, message = "Đã xảy ra lỗi khi xóa: " + ex.Message });
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

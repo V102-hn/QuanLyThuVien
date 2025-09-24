@@ -145,6 +145,7 @@
     <Compile Include="Controllers\ReadersController.cs" />
     <Compile Include="Controllers\TacGiaController.cs" />
     <Compile Include="Controllers\ThongTinController.cs" />
+    <Compile Include="Controllers\TimKiemController.cs" />
     <Compile Include="Controllers\XuLyViPhamController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -284,6 +285,7 @@
     <Content Include="Views\CaiDat\Index.cshtml" />
     <Content Include="Views\ThongTin\Index.cshtml" />
     <Content Include="Views\DangXuat\Index.cshtml" />
+    <Content Include="Views\TimKiem\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

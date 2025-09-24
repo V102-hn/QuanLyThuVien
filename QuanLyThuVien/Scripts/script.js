@@ -158,11 +158,35 @@ $(document).ready(function () {
         // ... (code mô phỏng cũ có thể giữ lại hoặc xóa đi tùy bạn)
     });
 
-    // Sự kiện khi bấm nút "Xóa" (vẫn là mô phỏng)
-    $('.btn-delete').on('click', function () {
-        if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
-            alert('Chức năng "Xóa" cần được kết nối với backend! (Mô phỏng)');
-            // this.closest('tr').remove(); // Tạm thời vô hiệu hóa để tránh xóa nhầm trên giao diện
+    // === PHẦN ĐÃ SỬA LỖI: LOGIC NÚT XÓA ===
+    // Sử dụng event delegation để bắt sự kiện click trên nút xóa
+    $('#sach-table').on('click', '.btn-delete', function () {
+        const button = $(this); // Lưu lại nút đã được nhấn
+        const bookId = button.data('id'); // Lấy mã sách từ thuộc tính data-id
+        const bookName = button.closest('tr').find('td:eq(1)').text(); // Lấy tên sách để hiển thị trong thông báo
+
+        // Hiển thị hộp thoại xác nhận trước khi xóa
+        if (confirm(`Bạn có chắc chắn muốn xóa sách "${bookName}" không?`)) {
+            // Nếu người dùng đồng ý, gửi yêu cầu AJAX
+            $.ajax({
+                url: '/Book/Delete', // URL đến action Delete
+                type: 'POST',
+                data: { id: bookId }, // Dữ liệu gửi đi là id của sách
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        // Xóa dòng tương ứng khỏi bảng trên giao diện
+                        button.closest('tr').fadeOut(500, function () {
+                            $(this).remove();
+                        });
+                    } else {
+                        alert('Lỗi: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('Không thể kết nối đến server. Vui lòng thử lại.');
+                }
+            });
         }
     });
 
