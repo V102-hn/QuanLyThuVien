@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 // --- LOGIC FOR QUAN-LY-SACH.HTML (PHIÊN BẢN HOÀN CHỈNH) ---
+// --- LOGIC FOR QUAN-LY-SACH.HTML (PHIÊN BẢN ĐÃ SỬA LỖI) ---
 
 // Sử dụng cú pháp $(document).ready() của jQuery để đảm bảo mọi thứ đã sẵn sàng
 $(document).ready(function () {
@@ -127,55 +128,107 @@ $(document).ready(function () {
     // Chỉ chạy code này nếu có modal sách trên trang
     if (!bookModal) return;
 
+
     // Khai báo tất cả các phần tử cần thiết MỘT LẦN DUY NHẤT
     const addBookBtn = document.getElementById('add-book-btn');
     const closeBookModalBtn = document.querySelector('.close-book-modal');
     const bookModalTitle = document.getElementById('book-modal-title');
     const bookForm = document.getElementById('book-form');
+    // KHAI BÁO THÊM BIẾN NÀY: Tham chiếu đến input ẩn chứa MaSach
+    const hiddenBookId = $('#ma-sach-modal');
+
 
     // --- CÁC HÀM HỖ TRỢ ---
     function openBookModal() {
         bookModal.classList.add('show-modal');
     }
 
+
     function closeBookModal() {
         bookModal.classList.remove('show-modal');
     }
 
+    // BỔ SUNG HÀM NÀY: Hàm để reset form về trạng thái ban đầu
+    function resetForm() {
+        bookForm.reset(); // Xóa dữ liệu trên các trường input thông thường
+        hiddenBookId.val(''); // Quan trọng: Xóa ID sách đang được lưu trong trường ẩn
+        // Dòng dưới để reset ListBox đa lựa chọn (nếu bạn dùng plugin như Select2 thì nó hữu ích)
+        $('#the-loai').val(null);
+    }
+
+
     // --- GẮN CÁC SỰ KIỆN ---
+
 
     // Sự kiện khi bấm nút "Thêm Sách Mới"
     $(addBookBtn).on('click', function () {
         bookModalTitle.textContent = "Thêm Sách Mới";
-        bookForm.reset();
+        // SỬA LẠI: Dùng hàm resetForm() để đảm bảo trường ẩn cũng được xóa
+        resetForm();
         openBookModal();
     });
 
-    // Sự kiện khi bấm các nút "Sửa" (vẫn là mô phỏng)
-    $('.btn-edit').on('click', function () {
-        alert('Chức năng "Sửa" đang được phát triển!');
-        // bookModalTitle.textContent = "Chỉnh sửa Thông tin Sách";
-        // ... (code mô phỏng cũ có thể giữ lại hoặc xóa đi tùy bạn)
+
+    // Sự kiện khi bấm nút "Sửa"
+    $('#sach-table').on('click', '.btn-edit', function () {
+        const bookId = $(this).data('id');
+
+
+        // Gọi AJAX để lấy thông tin chi tiết của sách
+        $.ajax({
+            url: '/Book/GetBookDetails',
+            type: 'GET',
+            data: { id: bookId },
+            success: function (response) {
+                if (response.success) {
+                    const data = response.data;
+                    const sach = data.sach;
+
+
+                    // Điền thông tin vào form
+                    resetForm(); // Reset trước khi điền để đảm bảo form sạch
+                    bookModalTitle.textContent = 'Chỉnh sửa Thông tin Sách';
+
+
+                    hiddenBookId.val(sach.MaSach);
+                    $('#ten-sach-modal').val(sach.TenSach);
+                    $('#so-luong').val(sach.SoLuongTon);
+                    $('#tac-gia').val(sach.MaTacGia);
+                    $('#nxb').val(sach.MaNXB);
+                    $('#mo-ta').val(sach.MoTa);
+
+
+                    // Chọn các thể loại tương ứng trong ListBox
+                    $('#the-loai').val(data.selectedTheLoaiIds);
+
+
+                    openBookModal(); // Mở modal sau khi đã điền xong dữ liệu
+                } else {
+                    alert('Lỗi: ' + response.message);
+                }
+            },
+            error: function () {
+                alert('Không thể kết nối đến server để lấy dữ liệu sách.');
+            }
+        });
     });
 
-    // === PHẦN ĐÃ SỬA LỖI: LOGIC NÚT XÓA ===
-    // Sử dụng event delegation để bắt sự kiện click trên nút xóa
-    $('#sach-table').on('click', '.btn-delete', function () {
-        const button = $(this); // Lưu lại nút đã được nhấn
-        const bookId = button.data('id'); // Lấy mã sách từ thuộc tính data-id
-        const bookName = button.closest('tr').find('td:eq(1)').text(); // Lấy tên sách để hiển thị trong thông báo
 
-        // Hiển thị hộp thoại xác nhận trước khi xóa
+    // LOGIC NÚT XÓA (Giữ nguyên)
+    $('#sach-table').on('click', '.btn-delete', function () {
+        const button = $(this);
+        const bookId = button.data('id');
+        const bookName = button.closest('tr').find('td:eq(1)').text();
+
+
         if (confirm(`Bạn có chắc chắn muốn xóa sách "${bookName}" không?`)) {
-            // Nếu người dùng đồng ý, gửi yêu cầu AJAX
             $.ajax({
-                url: '/Book/Delete', // URL đến action Delete
+                url: '/Book/Delete',
                 type: 'POST',
-                data: { id: bookId }, // Dữ liệu gửi đi là id của sách
+                data: { id: bookId },
                 success: function (response) {
                     if (response.success) {
                         alert(response.message);
-                        // Xóa dòng tương ứng khỏi bảng trên giao diện
                         button.closest('tr').fadeOut(500, function () {
                             $(this).remove();
                         });
@@ -190,6 +243,7 @@ $(document).ready(function () {
         }
     });
 
+
     // Các sự kiện đóng modal
     $(closeBookModalBtn).on('click', closeBookModal);
     $(bookModal).on('click', function (event) {
@@ -198,38 +252,41 @@ $(document).ready(function () {
         }
     });
 
-    // === PHẦN QUAN TRỌNG NHẤT: XỬ LÝ SUBMIT FORM BẰNG AJAX ===
-    $('#book-form').on('submit', function (event) {
-        // In ra console để kiểm tra xem sự kiện có được bắt không
-        console.log("Form submit event captured!");
 
-        event.preventDefault(); // Ngăn form submit theo cách truyền thống
+    // XỬ LÝ SUBMIT FORM CHO CẢ THÊM VÀ SỬA
+    $('#book-form').on('submit', function (event) {
+        event.preventDefault();
+
 
         if (!this.checkValidity()) {
             this.reportValidity();
             return;
         }
 
-        var formData = $(this).serialize();
-        console.log("Form Data:", formData); // In dữ liệu form ra để kiểm tra
 
-        // Gửi AJAX request đến server
+        const bookId = hiddenBookId.val();
+        // Quyết định URL sẽ gửi đến dựa trên việc có bookId hay không
+        const submissionUrl = bookId ? '/Book/Edit' : '/Book/Create';
+
+        var formData = $(this).serialize();
+
+
         $.ajax({
-            url: '/Book/Create',
+            url: submissionUrl,
             type: 'POST',
             data: formData,
             success: function (response) {
                 if (response.success) {
                     alert(response.message);
                     closeBookModal();
-                    location.reload(); // Tải lại trang để thấy dữ liệu mới
+                    location.reload(); // Tải lại trang để thấy dữ liệu mới/đã cập nhật
                 } else {
                     alert('Lỗi: ' + response.message);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.error("AJAX Error:", textStatus, errorThrown, jqXHR.responseText);
-                alert('Không thể kết nối đến server. Vui lòng kiểm tra console (F12) để biết thêm chi tiết.');
+                alert('Không thể kết nối đến server. Vui lòng kiểm tra console (F12).');
             }
         });
     });

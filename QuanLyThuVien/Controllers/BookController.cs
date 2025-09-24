@@ -51,7 +51,7 @@ namespace QuanLyThuVien.Controllers
 
         // POST: Book/Create
         [HttpPost]
-        public ActionResult Create(Sach sach, int[] selectedTheLoaiIds)
+        public ActionResult Create([Bind(Exclude = "MaSach")] Sach sach, int[] selectedTheLoaiIds)
         {
             try
             {
@@ -61,6 +61,7 @@ namespace QuanLyThuVien.Controllers
                     // Thêm sách mới vào DB context
                     db.Saches.Add(sach);
                     db.SaveChanges(); // Lưu để lấy được MaSach vừa tạo
+
 
                     // Xử lý quan hệ Nhiều-Nhiều với Thể Loại
                     if (selectedTheLoaiIds != null)
@@ -77,9 +78,11 @@ namespace QuanLyThuVien.Controllers
                         db.SaveChanges(); // Lưu quan hệ
                     }
 
+
                     // Trả về kết quả thành công dưới dạng JSON cho AJAX
                     return Json(new { success = true, message = "Thêm sách mới thành công!" });
                 }
+
 
                 // Nếu dữ liệu không hợp lệ
                 return Json(new { success = false, message = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại." });
@@ -123,6 +126,113 @@ namespace QuanLyThuVien.Controllers
             {
                 // Bắt lỗi và trả về thông báo lỗi
                 return Json(new { success = false, message = "Đã xảy ra lỗi khi xóa: " + ex.Message });
+            }
+        }
+
+        // GET: Book/GetBookDetails/5
+        // Action này dùng để lấy dữ liệu chi tiết của 1 cuốn sách và các thể loại của nó
+        // Dữ liệu sẽ được trả về dưới dạng JSON cho AJAX
+        public ActionResult GetBookDetails(int id)
+        {
+            try
+            {
+                // Tắt Lazy Loading để tránh lỗi tham chiếu vòng lặp khi serialize JSON
+                db.Configuration.ProxyCreationEnabled = false;
+
+                // 1. Tìm sách theo ID
+                var sach = db.Saches.AsNoTracking().FirstOrDefault(s => s.MaSach == id);
+
+
+                if (sach == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy sách." }, JsonRequestBehavior.AllowGet);
+                }
+
+
+                // 2. Lấy danh sách các MaTheLoai mà sách này đang thuộc về
+                var selectedTheLoaiIds = db.PhanLoaiSaches
+                                            .Where(p => p.MaSach == id)
+                                            .Select(p => p.MaTheLoai)
+                                            .ToList();
+
+
+                // 3. Trả về một đối tượng JSON chứa cả thông tin sách và danh sách ID thể loại
+                return Json(new
+                {
+                    success = true,
+                    data = new
+                    {
+                        sach = sach,
+                        selectedTheLoaiIds = selectedTheLoaiIds
+                    }
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi khi lấy dữ liệu: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+        // POST: Book/Edit
+        [HttpPost]
+        public ActionResult Edit(Sach sach, int[] selectedTheLoaiIds)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    // 1. Lấy đối tượng sách hiện tại từ DB
+                    var existingSach = db.Saches.Find(sach.MaSach);
+                    if (existingSach == null)
+                    {
+                        return Json(new { success = false, message = "Không tìm thấy sách để cập nhật." });
+                    }
+
+
+                    // 2. Cập nhật các thuộc tính của sách
+                    existingSach.TenSach = sach.TenSach;
+                    existingSach.MaTacGia = sach.MaTacGia;
+                    existingSach.MaNXB = sach.MaNXB;
+                    existingSach.SoLuongTon = sach.SoLuongTon;
+                    existingSach.MoTa = sach.MoTa;
+                    // Thêm các trường khác nếu có...
+                    // Ví dụ: existingSach.NgayCapNhat = DateTime.Now;
+
+
+                    // 3. Xử lý cập nhật quan hệ Nhiều-Nhiều với Thể Loại
+                    // Cách đơn giản nhất: Xóa hết các liên kết cũ và tạo lại các liên kết mới
+                    var oldPhanLoai = db.PhanLoaiSaches.Where(p => p.MaSach == sach.MaSach);
+                    db.PhanLoaiSaches.RemoveRange(oldPhanLoai);
+
+
+                    if (selectedTheLoaiIds != null)
+                    {
+                        foreach (var maTheLoai in selectedTheLoaiIds)
+                        {
+                            var newPhanLoai = new PhanLoaiSach
+                            {
+                                MaSach = sach.MaSach,
+                                MaTheLoai = maTheLoai
+                            };
+                            db.PhanLoaiSaches.Add(newPhanLoai);
+                        }
+                    }
+
+
+                    // 4. Lưu tất cả thay đổi vào database
+                    db.SaveChanges();
+
+
+                    return Json(new { success = true, message = "Cập nhật thông tin sách thành công!" });
+                }
+
+
+                return Json(new { success = false, message = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Đã xảy ra lỗi khi cập nhật: " + ex.Message });
             }
         }
 
