@@ -359,131 +359,116 @@ document.addEventListener('DOMContentLoaded', function () {
         closeReaderModal();
     });
 });
-// --- LOGIC FOR QUAN-LY-MUON-TRA.HTML (VERSION 2 - UPDATED) ---
 
-document.addEventListener('DOMContentLoaded', function () {
-    const loanModal = document.getElementById('loan-modal');
-    if (!loanModal) return;
+// --- LOGIC FOR QUAN-LY-MUON-TRA.HTML (VERSION 3 - FULL BACKEND INTEGRATION) ---
 
-    const addLoanBtn = document.getElementById('add-loan-btn');
-    const closeLoanModalBtns = document.querySelectorAll('.close-loan-modal, .close-loan-modal-btn');
-    const loanModalTitle = document.getElementById('loan-modal-title');
-    const loanForm = document.getElementById('loan-form');
-    const maPhieuInput = document.getElementById('ma-phieu');
-    const addBookToListBtn = document.getElementById('add-book-to-list-btn');
-    const sachSelect = document.getElementById('sach-select');
-    const selectedBooksList = document.getElementById('selected-books-list');
-    const dataTableBody = document.querySelector('.data-table-section tbody');
+$(document).ready(function () {
+    const loanModal = $('#loan-modal');
+    if (loanModal.length === 0) return;
 
-    // Hàm điều khiển trạng thái form (bật/tắt)
-    function setFormEnabled(enabled) {
-        loanForm.querySelectorAll('input, select, textarea, button').forEach(el => {
-            el.disabled = !enabled;
-        });
-        // Luôn bật các nút đóng modal
-        document.querySelectorAll('.close-loan-modal, .close-loan-modal-btn').forEach(btn => btn.disabled = false);
+    const addLoanBtn = $('#add-loan-btn');
+    const closeLoanModalBtns = $('.close-loan-modal, .close-loan-modal-btn');
+    const loanModalTitle = $('#loan-modal-title');
+    const loanForm = $('#loan-form');
+    const addBookToListBtn = $('#add-book-to-list-btn');
+    const sachSelect = $('#sach-select');
+    const selectedBooksList = $('#selected-books-list');
+    const dataTableBody = $('.data-table-section tbody');
+
+    function openLoanModal() { loanModal.addClass('show-modal'); }
+    function closeLoanModal() { loanModal.removeClass('show-modal'); }
+
+    function setDefaultDates() {
+        const today = new Date();
+        const twoWeeksLater = new Date();
+        twoWeeksLater.setDate(today.getDate() + 14);
+        const formatDate = (date) => date.toISOString().split('T')[0];
+        $('#ngay-muon').val(formatDate(today));
+        $('#ngay-hen-tra').val(formatDate(twoWeeksLater));
     }
 
-    function openLoanModal() {
-        loanModal.classList.add('show-modal');
-    }
-
-    function closeLoanModal() {
-        loanModal.classList.remove('show-modal');
-    }
-
-    // ACTION: Mở modal để TẠO PHIẾU MƯỢN MỚI
-    addLoanBtn.addEventListener('click', function () {
-        loanModalTitle.textContent = "Tạo Phiếu Mượn Mới";
-        loanForm.reset();
-        selectedBooksList.innerHTML = '';
-        maPhieuInput.value = "PM" + Math.floor(1000 + Math.random() * 9000);
-        setFormEnabled(true); // Bật form để nhập liệu
+    addLoanBtn.on('click', function () {
+        loanModalTitle.text("Tạo Phiếu Mượn Mới");
+        loanForm[0].reset();
+        selectedBooksList.empty();
+        setDefaultDates();
+        loanForm.find('input, select, textarea, button').prop('disabled', false);
         openLoanModal();
     });
 
-    // SỬ DỤNG EVENT DELEGATION ĐỂ XỬ LÝ CLICK TRÊN TOÀN BỘ BẢNG
-    dataTableBody.addEventListener('click', function (event) {
-        const target = event.target.closest('button');
-        if (!target) return; // Bỏ qua nếu không click vào button
-
-        const row = target.closest('tr');
-
-        // ACTION: Mở modal để XEM CHI TIẾT
-        if (target.classList.contains('btn-view-details')) {
-            loanModalTitle.textContent = "Chi tiết Phiếu Mượn - " + row.cells[0].textContent;
-            loanForm.reset();
-            // Mô phỏng việc điền dữ liệu vào form
-            document.getElementById('doc-gia-select').value = 'DG001'; // Giả sử là DG001
-            document.getElementById('ngay-muon').value = '2025-09-12';
-            document.getElementById('ngay-hen-tra').value = '2025-09-26';
-            selectedBooksList.innerHTML = `<li><span>S0123 - Lập trình Hướng đối tượng</span></li>`;
-
-            setFormEnabled(false); // Tắt form, chỉ cho xem
-            openLoanModal();
-        }
-
-        // ACTION: ĐÁNH DẤU TRẢ SÁCH
-        if (target.classList.contains('btn-mark-returned')) {
-            if (confirm('Xác nhận độc giả đã trả sách cho phiếu mượn [' + row.cells[0].textContent + ']?')) {
-                const statusCell = row.querySelector('.status');
-                statusCell.className = 'status returned';
-                statusCell.textContent = 'Đã trả';
-                target.remove(); // Xóa nút "Trả sách" sau khi đã trả
-                alert('Cập nhật trạng thái thành công!');
-            }
-        }
-
-        // ACTION: XÓA PHIẾU MƯỢN
-        if (target.classList.contains('btn-delete')) {
-            if (confirm('Bạn có chắc chắn muốn xóa vĩnh viễn phiếu mượn [' + row.cells[0].textContent + ']?')) {
-                row.remove();
-                alert('Xóa phiếu mượn thành công!');
-            }
-        }
-    });
-
-
-    // Các sự kiện đóng modal
-    closeLoanModalBtns.forEach(btn => btn.addEventListener('click', closeLoanModal));
-    loanModal.addEventListener('click', function (event) {
-        if (event.target === loanModal) {
+    closeLoanModalBtns.on('click', closeLoanModal);
+    loanModal.on('click', function (event) {
+        if (event.target === loanModal[0]) {
             closeLoanModal();
         }
     });
 
-    // Sự kiện submit form
-    loanForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        alert('Lưu thông tin phiếu mượn thành công! (Mô phỏng)');
-        closeLoanModal();
-    });
-
-    // Logic thêm sách vào danh sách trong modal
-    addBookToListBtn.addEventListener('click', function () {
-        const selectedOption = sachSelect.options[sachSelect.selectedIndex];
-        if (selectedOption.value) {
-            const bookId = selectedOption.value;
-            const bookName = selectedOption.text;
-
-            if (document.querySelector(`li[data-book-id="${bookId}"]`)) {
+    addBookToListBtn.on('click', function () {
+        const selectedOption = sachSelect.find('option:selected');
+        const bookId = selectedOption.val();
+        const bookText = selectedOption.text();
+        if (bookId) {
+            if (selectedBooksList.find(`li[data-book-id="${bookId}"]`).length > 0) {
                 alert('Sách này đã được thêm vào danh sách!');
                 return;
             }
-            const li = document.createElement('li');
-            li.setAttribute('data-book-id', bookId);
-            li.innerHTML = `<span>${bookName}</span><button type="button" class="remove-book-btn">&times;</button>`;
-            selectedBooksList.appendChild(li);
+            const listItem = `<li data-book-id="${bookId}"><span>${bookText}</span><button type="button" class="remove-book-btn">&times;</button></li>`;
+            selectedBooksList.append(listItem);
         }
     });
 
-    // Logic xóa sách khỏi danh sách
-    selectedBooksList.addEventListener('click', function (event) {
-        if (event.target.classList.contains('remove-book-btn')) {
-            event.target.closest('li').remove();
+    selectedBooksList.on('click', '.remove-book-btn', function () {
+        $(this).closest('li').remove();
+    });
+
+    // XỬ LÝ SUBMIT FORM TẠO PHIẾU MƯỢN
+    loanForm.on('submit', function (event) {
+        event.preventDefault();
+
+        const sachIds = [];
+        selectedBooksList.find('li').each(function () {
+            sachIds.push($(this).data('book-id'));
+        });
+
+        if (sachIds.length === 0) {
+            alert('Vui lòng chọn ít nhất một cuốn sách để mượn!');
+            return;
         }
+
+        const muonTraData = {
+            MaDocGia: $('#doc-gia-select').val(),
+            NgayMuon: $('#ngay-muon').val(),
+            NgayHenTra: $('#ngay-hen-tra').val(),
+            GhiChu: $('#ghi-chu').val(),
+            SachIds: sachIds
+        };
+
+        $.ajax({
+            url: '/MuonTra/Create',
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(muonTraData),
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    closeLoanModal();
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + response.message);
+                }
+            },
+            error: function () {
+                alert('Không thể kết nối đến server. Vui lòng thử lại.');
+            }
+        });
+    });
+
+    // Các chức năng khác (mô phỏng)
+    dataTableBody.on('click', '.btn-view-details, .btn-mark-returned, .btn-delete', function () {
+        alert('Chức năng này đang được phát triển!');
     });
 });
+
 // --- LOGIC FOR BAO-CAO-THONG-KE.HTML ---
 
 document.addEventListener('DOMContentLoaded', function () {
