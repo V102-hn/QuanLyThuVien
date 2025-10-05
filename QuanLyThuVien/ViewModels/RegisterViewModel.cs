@@ -11,7 +11,7 @@ namespace QuanLyThuVien.ViewModels
         [Required(ErrorMessage = "Vui lòng nhập họ và tên")]
         [StringLength(100)]
         public string HoTen { get; set; }
-
+        public string Email { get; set; }
         [Required(ErrorMessage = "Vui lòng nhập tên đăng nhập (Email hoặc Mã SV)")]
         [StringLength(100)]
         public string Username { get; set; }

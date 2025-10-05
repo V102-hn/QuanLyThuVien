@@ -124,6 +124,162 @@ namespace QuanLyThuVien.Controllers
                 }
             }
         }
+        [HttpGet]
+        public ActionResult GetMuonTraDetails(int id)
+        {
+            try
+            {
+                // Lấy thông tin phiếu mượn chính
+                var phieuMuon = db.MuonTras
+                    .Where(mt => mt.MaMuonTra == id)
+                    .Select(mt => new {
+                        mt.MaMuonTra,
+                        mt.TheMuonSach.MaDocGia,
+                        mt.NgayMuon,
+                        mt.NgayHenTra
+                    })
+                    .FirstOrDefault();
+
+                if (phieuMuon == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy phiếu mượn." }, JsonRequestBehavior.AllowGet);
+                }
+
+                // Lấy danh sách sách đã mượn và ghi chú
+                var chiTiet = db.ChiTietMuonTras
+                    .Where(ct => ct.MaMuonTra == id)
+                    .Select(ct => new {
+                        TenSachDisplay = ct.Sach.MaSach + " - " + ct.Sach.TenSach,
+                        ct.GhiChu
+                    })
+                    .ToList();
+
+                var ghiChuChung = chiTiet.FirstOrDefault()?.GhiChu;
+
+                return Json(new
+                {
+                    success = true,
+                    data = new
+                    {
+                        phieuMuon = phieuMuon,
+                        chiTietSach = chiTiet,
+                        ghiChu = ghiChuChung
+                    }
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult MarkAsReturned(int id)
+        {
+            try
+            {
+                var phieuMuon = db.MuonTras.Find(id);
+                if (phieuMuon == null || phieuMuon.NgayTraThucTe != null)
+                {
+                    return Json(new { success = false, message = "Phiếu mượn không hợp lệ hoặc đã được trả." });
+                }
+
+                phieuMuon.NgayTraThucTe = DateTime.Now;
+                phieuMuon.TrangThai = "Đã trả";
+
+                // Hoàn trả lại số lượng sách vào kho
+                var chiTietMuon = db.ChiTietMuonTras.Where(ct => ct.MaMuonTra == id);
+                foreach (var item in chiTietMuon)
+                {
+                    var sach = db.Saches.Find(item.MaSach);
+                    if (sach != null) sach.SoLuongTon += item.SoLuongMuon;
+                }
+
+                db.SaveChanges();
+                return Json(new { success = true, message = "Xác nhận trả sách thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult Delete(int id)
+        {
+            using (var transaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var phieuMuon = db.MuonTras.Find(id);
+                    if (phieuMuon == null)
+                    {
+                        return Json(new { success = false, message = "Không tìm thấy phiếu mượn." });
+                    }
+
+                    var chiTietMuonList = db.ChiTietMuonTras.Where(ct => ct.MaMuonTra == id).ToList();
+
+                    // Chỉ hoàn sách nếu phiếu chưa được trả
+                    if (phieuMuon.NgayTraThucTe == null)
+                    {
+                        foreach (var item in chiTietMuonList)
+                        {
+                            var sach = db.Saches.Find(item.MaSach);
+                            if (sach != null) sach.SoLuongTon += item.SoLuongMuon;
+                        }
+                    }
+
+                    db.ChiTietMuonTras.RemoveRange(chiTietMuonList); // Xóa chi tiết mượn
+                    db.MuonTras.Remove(phieuMuon); // Xóa phiếu mượn
+
+                    db.SaveChanges();
+                    transaction.Commit();
+
+                    return Json(new { success = true, message = "Xóa phiếu mượn thành công!" });
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
+                }
+            }
+        }
+
+        [HttpPost]
+        public ActionResult Edit(EditMuonTraDto data)
+        {
+            // Kiểm tra dữ liệu đầu vào cơ bản
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Dữ liệu không hợp lệ." });
+            }
+
+            try
+            {
+                var phieuMuon = db.MuonTras.Find(data.MaMuonTra);
+                if (phieuMuon == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy phiếu mượn." });
+                }
+
+                // Cập nhật các trường được phép sửa
+                phieuMuon.NgayHenTra = data.NgayHenTra;
+
+                // Cập nhật Ghi Chú cho tất cả các sách trong phiếu mượn đó
+                var chiTietList = db.ChiTietMuonTras.Where(ct => ct.MaMuonTra == data.MaMuonTra).ToList();
+                foreach (var item in chiTietList)
+                {
+                    item.GhiChu = data.GhiChu;
+                }
+
+                db.SaveChanges();
+                return Json(new { success = true, message = "Cập nhật phiếu mượn thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
 
         protected override void Dispose(bool disposing)
         {

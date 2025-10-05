@@ -208,6 +208,7 @@
     <Compile Include="ViewModels\BaoCaoViewModel.cs" />
     <Compile Include="ViewModels\CaiDatViewModel.cs" />
     <Compile Include="ViewModels\CreateMuonTraDto.cs" />
+    <Compile Include="ViewModels\EditMuonTraDto.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MuonTraViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

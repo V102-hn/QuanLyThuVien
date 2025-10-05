@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-// --- LOGIC FOR QUAN-LY-SACH.HTML (PHIÊN BẢN HOÀN CHỈNH) ---
+
 // --- LOGIC FOR QUAN-LY-SACH.HTML (PHIÊN BẢN ĐÃ SỬA LỖI) ---
 
 // Sử dụng cú pháp $(document).ready() của jQuery để đảm bảo mọi thứ đã sẵn sàng
@@ -292,180 +292,132 @@ $(document).ready(function () {
     });
 });
 
-// --- LOGIC FOR QUAN-LY-DOC-GIA.HTML ---
 
-document.addEventListener('DOMContentLoaded', function () {
-    const readerModal = document.getElementById('reader-modal');
-    if (!readerModal) return;
+// --- LOGIC FOR QUAN-LY-DOC-GIA.HTML (PHIÊN BẢN HOÀN CHỈNH) ---
+$(document).ready(function () {
+    const readerModal = $('#reader-modal');
+    if (readerModal.length === 0) return; // Chỉ chạy code nếu có modal
 
-    const addReaderBtn = document.getElementById('add-reader-btn');
-    const closeReaderModalBtn = document.querySelector('.close-reader-modal');
-    const readerModalTitle = document.getElementById('reader-modal-title');
-    const readerForm = document.getElementById('reader-form');
+    // --- Lấy các phần tử ---
+    const addReaderBtn = $('#add-reader-btn');
+    const closeReaderModalBtn = $('.close-reader-modal');
+    const readerModalTitle = $('#reader-modal-title');
+    const readerForm = $('#reader-form');
+    const readersTable = $('#readers-table');
 
-    function openReaderModal() {
-        readerModal.classList.add('show-modal');
-    }
+    // --- Các hàm hỗ trợ ---
+    function openReaderModal() { readerModal.addClass('show-modal'); }
+    function closeReaderModal() { readerModal.removeClass('show-modal'); }
 
-    function closeReaderModal() {
-        readerModal.classList.remove('show-modal');
-    }
+    // --- Gắn sự kiện ---
 
-    addReaderBtn.addEventListener('click', function () {
-        readerModalTitle.textContent = "Thêm Độc giả Mới";
-        readerForm.reset();
-        document.getElementById('ma-doc-gia').readOnly = false;
+    // 1. Mở modal để THÊM độc giả
+    addReaderBtn.on('click', function () {
+        readerModalTitle.text("Thêm Độc giả Mới");
+        readerForm[0].reset();
+        $('#ma-doc-gia').val(''); // Xóa ID ẩn
+        $('#username-modal').prop('readonly', false); // Cho phép nhập username
         openReaderModal();
     });
 
-    document.querySelectorAll('.data-table-section .btn-edit').forEach(button => {
-        button.addEventListener('click', function () {
-            if (this.closest('tr').cells[0].textContent.startsWith('DG')) {
-                readerModalTitle.textContent = "Chỉnh sửa Thông tin Độc giả";
-
-                const row = this.closest('tr');
-                document.getElementById('ma-doc-gia').value = row.cells[0].textContent;
-                document.getElementById('ma-doc-gia').readOnly = true;
-                document.getElementById('ho-ten').value = row.cells[1].textContent;
-                document.getElementById('lop').value = row.cells[2].textContent;
-                document.getElementById('email').value = row.cells[3].textContent;
-
-                openReaderModal();
-            }
-        });
-    });
-
-    document.querySelectorAll('.data-table-section .btn-delete').forEach(button => {
-        button.addEventListener('click', function () {
-            if (this.closest('tr').cells[0].textContent.startsWith('DG')) {
-                if (confirm('Bạn có chắc chắn muốn xóa độc giả này không?')) {
-                    this.closest('tr').remove();
-                    alert('Xóa độc giả thành công! (Mô phỏng)');
-                }
-            }
-        });
-    });
-
-    closeReaderModalBtn.addEventListener('click', closeReaderModal);
-    readerModal.addEventListener('click', function (event) {
-        if (event.target === readerModal) {
-            closeReaderModal();
-        }
-    });
-
-    readerForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        alert('Lưu thông tin độc giả thành công! (Mô phỏng)');
-        closeReaderModal();
-    });
-});
-
-// --- LOGIC FOR QUAN-LY-MUON-TRA.HTML (VERSION 3 - FULL BACKEND INTEGRATION) ---
-
-$(document).ready(function () {
-    const loanModal = $('#loan-modal');
-    if (loanModal.length === 0) return;
-
-    const addLoanBtn = $('#add-loan-btn');
-    const closeLoanModalBtns = $('.close-loan-modal, .close-loan-modal-btn');
-    const loanModalTitle = $('#loan-modal-title');
-    const loanForm = $('#loan-form');
-    const addBookToListBtn = $('#add-book-to-list-btn');
-    const sachSelect = $('#sach-select');
-    const selectedBooksList = $('#selected-books-list');
-    const dataTableBody = $('.data-table-section tbody');
-
-    function openLoanModal() { loanModal.addClass('show-modal'); }
-    function closeLoanModal() { loanModal.removeClass('show-modal'); }
-
-    function setDefaultDates() {
-        const today = new Date();
-        const twoWeeksLater = new Date();
-        twoWeeksLater.setDate(today.getDate() + 14);
-        const formatDate = (date) => date.toISOString().split('T')[0];
-        $('#ngay-muon').val(formatDate(today));
-        $('#ngay-hen-tra').val(formatDate(twoWeeksLater));
-    }
-
-    addLoanBtn.on('click', function () {
-        loanModalTitle.text("Tạo Phiếu Mượn Mới");
-        loanForm[0].reset();
-        selectedBooksList.empty();
-        setDefaultDates();
-        loanForm.find('input, select, textarea, button').prop('disabled', false);
-        openLoanModal();
-    });
-
-    closeLoanModalBtns.on('click', closeLoanModal);
-    loanModal.on('click', function (event) {
-        if (event.target === loanModal[0]) {
-            closeLoanModal();
-        }
-    });
-
-    addBookToListBtn.on('click', function () {
-        const selectedOption = sachSelect.find('option:selected');
-        const bookId = selectedOption.val();
-        const bookText = selectedOption.text();
-        if (bookId) {
-            if (selectedBooksList.find(`li[data-book-id="${bookId}"]`).length > 0) {
-                alert('Sách này đã được thêm vào danh sách!');
-                return;
-            }
-            const listItem = `<li data-book-id="${bookId}"><span>${bookText}</span><button type="button" class="remove-book-btn">&times;</button></li>`;
-            selectedBooksList.append(listItem);
-        }
-    });
-
-    selectedBooksList.on('click', '.remove-book-btn', function () {
-        $(this).closest('li').remove();
-    });
-
-    // XỬ LÝ SUBMIT FORM TẠO PHIẾU MƯỢN
-    loanForm.on('submit', function (event) {
-        event.preventDefault();
-
-        const sachIds = [];
-        selectedBooksList.find('li').each(function () {
-            sachIds.push($(this).data('book-id'));
-        });
-
-        if (sachIds.length === 0) {
-            alert('Vui lòng chọn ít nhất một cuốn sách để mượn!');
-            return;
-        }
-
-        const muonTraData = {
-            MaDocGia: $('#doc-gia-select').val(),
-            NgayMuon: $('#ngay-muon').val(),
-            NgayHenTra: $('#ngay-hen-tra').val(),
-            GhiChu: $('#ghi-chu').val(),
-            SachIds: sachIds
-        };
+    // 2. Mở modal để SỬA độc giả
+    readersTable.on('click', '.btn-edit', function () {
+        const readerId = $(this).data('id');
 
         $.ajax({
-            url: '/MuonTra/Create',
+            url: '/Readers/GetReaderDetails',
+            type: 'GET',
+            data: { id: readerId },
+            success: function (response) {
+                if (response.success) {
+                    const data = response.data;
+                    readerModalTitle.text("Chỉnh sửa Thông tin Độc giả");
+                    readerForm[0].reset();
+
+                    // Điền dữ liệu vào form
+                    $('#ma-doc-gia').val(data.MaDocGia);
+                    $('#ho-ten').val(data.HoTen);
+                    $('#lop').val(data.Lop);
+                    $('#email').val(data.Email);
+                    $('#username-modal').val(data.Username).prop('readonly', true); // không cho sửa username
+                    $('#tinh-trang-the').val(data.DaXoa.toString());
+
+                    openReaderModal();
+                } else {
+                    alert('Lỗi: Không thể lấy thông tin độc giả.');
+                }
+            },
+            error: function () {
+                alert('Không thể kết nối đến server.');
+            }
+        });
+    });
+
+    // 3. Xử lý nút XÓA độc giả
+    readersTable.on('click', '.btn-delete', function () {
+        const button = $(this);
+        const readerId = button.data('id');
+        const readerName = button.closest('tr').find('td:eq(1)').text();
+
+        if (confirm(`Bạn có chắc chắn muốn XÓA VĨNH VIỄN độc giả "${readerName}" không? Hành động này không thể hoàn tác.`)) {
+            $.ajax({
+                url: '/Readers/Delete',
+                type: 'POST',
+                data: { id: readerId },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+
+                        // === THAY ĐỔI Ở ĐÂY ===
+                        // Xóa dòng khỏi bảng trên giao diện với hiệu ứng mờ dần
+                        button.closest('tr').fadeOut(500, function () {
+                            $(this).remove();
+                        });
+
+                    } else {
+                        alert('Lỗi: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('Không thể kết nối đến server.');
+                }
+            });
+        }
+    });
+
+    // 4. Xử lý SUBMIT FORM (cho cả Thêm và Sửa)
+    readerForm.on('submit', function (event) {
+        event.preventDefault();
+
+        const readerId = $('#ma-doc-gia').val();
+        const url = readerId ? '/Readers/Edit' : '/Readers/Create'; // Quyết định URL
+        const formData = $(this).serialize();
+
+        $.ajax({
+            url: url,
             type: 'POST',
-            contentType: 'application/json; charset=utf-8',
-            data: JSON.stringify(muonTraData),
+            data: formData,
             success: function (response) {
                 if (response.success) {
                     alert(response.message);
-                    closeLoanModal();
-                    location.reload();
+                    closeReaderModal();
+                    location.reload(); // Tải lại trang để cập nhật danh sách
                 } else {
                     alert('Lỗi: ' + response.message);
                 }
             },
             error: function () {
-                alert('Không thể kết nối đến server. Vui lòng thử lại.');
+                alert('Không thể kết nối đến server.');
             }
         });
     });
 
-    // Các chức năng khác (mô phỏng)
-    dataTableBody.on('click', '.btn-view-details, .btn-mark-returned, .btn-delete', function () {
-        alert('Chức năng này đang được phát triển!');
+    // 5. Đóng modal
+    closeReaderModalBtn.on('click', closeReaderModal);
+    readerModal.on('click', function (event) {
+        if (event.target === readerModal[0]) {
+            closeReaderModal();
+        }
     });
 });
 
@@ -613,6 +565,236 @@ document.addEventListener('DOMContentLoaded', function () {
             closeUserModal();
         });
     }
+});
+
+// --- LOGIC FOR QUAN-LY-MUON-TRA.HTML (PHIÊN BẢN HOÀN CHỈNH VỚI TẤT CẢ CHỨC NĂNG) ---
+$(document).ready(function () {
+    const loanModal = $('#loan-modal');
+    if (loanModal.length === 0) return; // Chỉ chạy code nếu đang ở trang Mượn Trả
+
+    // --- Lấy các phần tử DOM ---
+    const addLoanBtn = $('#add-loan-btn');
+    const closeLoanModalBtns = $('.close-loan-modal, .close-loan-modal-btn');
+    const loanModalTitle = $('#loan-modal-title');
+    const loanForm = $('#loan-form');
+    const addBookToListBtn = $('#add-book-to-list-btn');
+    const sachSelect = $('#sach-select');
+    const selectedBooksList = $('#selected-books-list');
+    const dataTableBody = $('.data-table-section tbody');
+
+    // --- Các hàm hỗ trợ ---
+    function openLoanModal() { loanModal.addClass('show-modal'); }
+    function closeLoanModal() { loanModal.removeClass('show-modal'); }
+
+    function setDefaultDates() {
+        const today = new Date();
+        const twoWeeksLater = new Date();
+        twoWeeksLater.setDate(today.getDate() + 14);
+        const formatDate = (date) => date.toISOString().split('T')[0];
+        $('#ngay-muon').val(formatDate(today));
+        $('#ngay-hen-tra').val(formatDate(twoWeeksLater));
+    }
+
+    // Hàm chung để lấy dữ liệu chi tiết và điền vào modal
+    function populateModalWithDetails(id, isViewOnly) {
+        $.ajax({
+            url: '/MuonTra/GetMuonTraDetails',
+            type: 'GET',
+            data: { id: id },
+            success: function (response) {
+                if (!response.success) {
+                    alert('Lỗi: ' + response.message);
+                    return;
+                }
+                const data = response.data;
+                loanForm[0].reset();
+                selectedBooksList.empty();
+
+                // Điền thông tin chung của phiếu mượn
+                $('#ma-muon-tra-id').val(data.phieuMuon.MaMuonTra);
+                $('#ma-phieu-display').val(data.phieuMuon.MaMuonTra);
+                $('#doc-gia-select').val(data.phieuMuon.MaDocGia);
+                // Chuyển đổi định dạng ngày tháng từ JSON của .NET
+                $('#ngay-muon').val(new Date(parseInt(data.phieuMuon.NgayMuon.substr(6))).toISOString().split('T')[0]);
+                $('#ngay-hen-tra').val(new Date(parseInt(data.phieuMuon.NgayHenTra.substr(6))).toISOString().split('T')[0]);
+                $('#ghi-chu').val(data.ghiChu);
+
+                // Điền danh sách các sách đã mượn
+                data.chiTietSach.forEach(sach => {
+                    // Chế độ Xem/Sửa không cần nút xóa sách
+                    const listItem = `<li><span>${sach.TenSachDisplay}</span></li>`;
+                    selectedBooksList.append(listItem);
+                });
+
+                // Tùy chỉnh modal dựa trên chế độ Xem hoặc Sửa
+                if (isViewOnly) {
+                    loanModalTitle.text("Chi tiết Phiếu Mượn #" + id);
+                    // Khóa tất cả các trường
+                    loanForm.find('input, select, textarea, button').prop('disabled', true);
+                    // Luôn cho phép đóng modal
+                    $('.close-loan-modal, .close-loan-modal-btn').prop('disabled', false);
+                } else { // Chế độ Sửa
+                    loanModalTitle.text("Chỉnh sửa Phiếu Mượn #" + id);
+                    // Mở khóa tất cả các trường trước
+                    loanForm.find('input, select, textarea, button').prop('disabled', false);
+                    // Sau đó khóa các trường không được phép sửa
+                    $('#ma-phieu-display, #doc-gia-select, #ngay-muon, #sach-select, #add-book-to-list-btn').prop('disabled', true);
+                }
+                openLoanModal();
+            },
+            error: function () {
+                alert('Không thể kết nối đến server để lấy dữ liệu.');
+            }
+        });
+    }
+
+    // --- Gắn các sự kiện cho các nút ---
+
+    // 1. Sự kiện nhấn nút "Tạo Phiếu Mượn"
+    addLoanBtn.on('click', function () {
+        loanModalTitle.text("Tạo Phiếu Mượn Mới");
+        loanForm[0].reset();
+        selectedBooksList.empty();
+        $('#ma-muon-tra-id').val(''); // Quan trọng: Xóa ID để form biết đây là chế độ tạo mới
+        $('#ma-phieu-display').val('');
+        loanForm.find('input, select, textarea, button').prop('disabled', false); // Mở khóa tất cả các trường
+        setDefaultDates();
+        openLoanModal();
+    });
+
+    // 2. Sự kiện nhấn nút "Chi tiết"
+    dataTableBody.on('click', '.btn-view-details', function () {
+        populateModalWithDetails($(this).data('id'), true); // true = chế độ chỉ xem
+    });
+
+    // 3. Sự kiện nhấn nút "Sửa"
+    dataTableBody.on('click', '.btn-edit', function () {
+        populateModalWithDetails($(this).data('id'), false); // false = chế độ sửa
+    });
+
+    // 4. Sự kiện nhấn nút "Trả sách"
+    dataTableBody.on('click', '.btn-mark-returned', function () {
+        const button = $(this);
+        const maPhieu = button.data('id');
+        if (confirm(`Bạn có chắc chắn muốn xác nhận trả sách cho phiếu [${maPhieu}] không?`)) {
+            $.ajax({
+                url: '/MuonTra/MarkAsReturned',
+                type: 'POST', data: { id: maPhieu },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else { alert('Lỗi: ' + response.message); }
+                },
+                error: function () { alert('Không thể kết nối đến server.'); }
+            });
+        }
+    });
+
+    // 5. Sự kiện nhấn nút "Xóa"
+    dataTableBody.on('click', '.btn-delete', function () {
+        const button = $(this);
+        const maPhieu = button.data('id');
+        if (confirm(`Bạn có chắc chắn muốn XÓA phiếu mượn [${maPhieu}] không?`)) {
+            $.ajax({
+                url: '/MuonTra/Delete',
+                type: 'POST', data: { id: maPhieu },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        button.closest('tr').fadeOut(500, function () { $(this).remove(); });
+                    } else { alert('Lỗi: ' + response.message); }
+                },
+                error: function () { alert('Không thể kết nối đến server.'); }
+            });
+        }
+    });
+
+    // --- Logic bên trong Modal ---
+
+    // Sự kiện nhấn nút "Thêm sách" vào danh sách
+    addBookToListBtn.on('click', function () {
+        const selectedOption = sachSelect.find('option:selected');
+        const bookId = selectedOption.val();
+        const bookText = selectedOption.text();
+        if (bookId) {
+            if (selectedBooksList.find(`li[data-book-id="${bookId}"]`).length > 0) {
+                alert('Sách này đã được thêm vào danh sách!'); return;
+            }
+            const listItem = `<li data-book-id="${bookId}"><span>${bookText}</span><button type="button" class="remove-book-btn">&times;</button></li>`;
+            selectedBooksList.append(listItem);
+        }
+    });
+
+    // Sự kiện nhấn nút "x" để xóa sách khỏi danh sách
+    selectedBooksList.on('click', '.remove-book-btn', function () {
+        $(this).closest('li').remove();
+    });
+
+    // Sự kiện SUBMIT FORM (xử lý cả TẠO MỚI và SỬA)
+    loanForm.on('submit', function (event) {
+        event.preventDefault();
+        const maMuonTra = $('#ma-muon-tra-id').val();
+
+        let url;
+        let dataToSend;
+        let contentType = 'application/x-www-form-urlencoded; charset=UTF-8'; // Mặc định cho form data
+
+        if (maMuonTra) { // --- CHẾ ĐỘ SỬA ---
+            url = '/MuonTra/Edit';
+            dataToSend = {
+                MaMuonTra: maMuonTra,
+                NgayHenTra: $('#ngay-hen-tra').val(),
+                GhiChu: $('#ghi-chu').val()
+            };
+            // Dữ liệu sửa là JSON
+            contentType = 'application/json; charset=utf-8';
+            dataToSend = JSON.stringify(dataToSend);
+
+        } else { // --- CHẾ ĐỘ TẠO MỚI ---
+            url = '/MuonTra/Create';
+            const sachIds = [];
+            selectedBooksList.find('li').each(function () { sachIds.push($(this).data('book-id')); });
+
+            if (sachIds.length === 0) { alert('Vui lòng chọn ít nhất một cuốn sách!'); return; }
+
+            dataToSend = {
+                MaDocGia: $('#doc-gia-select').val(),
+                NgayMuon: $('#ngay-muon').val(),
+                NgayHenTra: $('#ngay-hen-tra').val(),
+                GhiChu: $('#ghi-chu').val(),
+                SachIds: sachIds
+            };
+            // Dữ liệu tạo mới là JSON
+            contentType = 'application/json; charset=utf-8';
+            dataToSend = JSON.stringify(dataToSend);
+        }
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            contentType: contentType,
+            data: dataToSend,
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    closeLoanModal();
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + response.message);
+                }
+            },
+            error: function () { alert('Không thể kết nối đến server.'); }
+        });
+    });
+
+    // Sự kiện đóng modal
+    closeLoanModalBtns.on('click', closeLoanModal);
+    loanModal.on('click', function (event) {
+        if (event.target === loanModal[0]) {
+            closeLoanModal();
+        }
+    });
 });
 
 // --- LOGIC FOR QUAN-LY-NXB.HTML ---
