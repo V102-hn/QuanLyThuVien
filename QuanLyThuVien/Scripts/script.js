@@ -487,84 +487,137 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
-// --- LOGIC FOR QUAN-LY-NGUOI-DUNG.HTML ---
+// --- LOGIC FOR QUAN-LY-NGUOI-DUNG.HTML (PHIÊN BẢN HOÀN CHỈNH) ---
+$(document).ready(function () {
+    const userModal = $('#user-modal');
+    if (userModal.length === 0) return; // Chỉ chạy nếu đang ở trang Quản lý Người dùng
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Chỉ chạy code này nếu đang ở trang Quản lý Người dùng
-    const userPageIdentifier = document.getElementById('add-user-btn');
-    if (!userPageIdentifier) return;
+    // --- Lấy các phần tử ---
+    const addUserBtn = $('#add-user-btn');
+    const closeUserModalBtn = $('.close-user-modal');
+    const userModalTitle = $('#user-modal-title');
+    const userForm = $('#user-form');
+    const usersTable = $('#users-table');
+    const searchInput = $('#user-search-input');
 
-    // Lấy các phần tử DOM
-    const userModal = document.getElementById('user-modal');
-    const addUserBtn = document.getElementById('add-user-btn');
-    const closeUserModalBtn = document.querySelector('.close-user-modal');
-    const userModalTitle = document.getElementById('user-modal-title');
-    const userForm = document.getElementById('user-form');
-    const dataTableBody = document.querySelector('.data-table-section tbody');
+    // --- Các hàm hỗ trợ ---
+    function openUserModal() { userModal.addClass('show-modal'); }
+    function closeUserModal() { userModal.removeClass('show-modal'); }
 
-    function openUserModal() {
-        if (userModal) userModal.classList.add('show-modal');
-    }
+    // --- Gắn sự kiện ---
 
-    function closeUserModal() {
-        if (userModal) userModal.classList.remove('show-modal');
-    }
-
-    // ACTION 1: Mở modal để THÊM NGƯỜI DÙNG MỚI
-    addUserBtn.addEventListener('click', function () {
-        userModalTitle.textContent = "Thêm Người dùng Mới";
-        userForm.reset();
-        document.getElementById('username').readOnly = false;
+    // 1. Mở modal để THÊM người dùng
+    addUserBtn.on('click', function () {
+        userModalTitle.text("Thêm Người dùng Mới");
+        userForm[0].reset();
+        $('#ma-thu-thu').val('');
+        $('#username').prop('readonly', false);
         openUserModal();
     });
 
-    // SỬ DỤNG EVENT DELEGATION cho các nút Sửa và Xóa
-    dataTableBody.addEventListener('click', function (event) {
-        const buttonClicked = event.target.closest('button');
-        if (!buttonClicked) return;
+    // 2. Mở modal để SỬA người dùng
+    usersTable.on('click', '.btn-edit', function () {
+        const userId = $(this).data('id');
 
-        const row = buttonClicked.closest('tr');
-        const username = row.cells[0].textContent;
+        $.ajax({
+            url: '/NguoiDung/GetUserDetails',
+            type: 'GET',
+            data: { id: userId },
+            success: function (response) {
+                if (response.success) {
+                    const data = response.data;
+                    userModalTitle.text("Chỉnh sửa Người dùng");
+                    userForm[0].reset();
 
-        // ACTION 2: Xử lý nút SỬA
-        if (buttonClicked.classList.contains('btn-edit')) {
-            userModalTitle.textContent = "Chỉnh sửa Người dùng";
+                    // Điền dữ liệu vào form
+                    $('#ma-thu-thu').val(data.MaThuThu);
+                    $('#username').val(data.Username).prop('readonly', true); // Không cho sửa username
+                    $('#full-name').val(data.HoTen);
+                    $('#email-user').val(data.Email);
+                    $('#role-select').val(data.IsAdmin.toString());
+                    $('#status-select').val(data.DaXoa.toString());
 
-            // Điền dữ liệu từ bảng vào form
-            document.getElementById('username').value = username;
-            document.getElementById('username').readOnly = true; // Không cho sửa username
-            document.getElementById('full-name').value = row.cells[1].textContent;
-            document.getElementById('email-user').value = row.cells[2].textContent;
-            // (Thêm code để chọn đúng role và status trong select)
-
-            openUserModal();
-        }
-
-        // ACTION 3: Xử lý nút XÓA
-        if (buttonClicked.classList.contains('btn-delete')) {
-            if (confirm(`Bạn có chắc chắn muốn xóa người dùng [${username}]?`)) {
-                row.remove();
-                alert('Xóa người dùng thành công!');
+                    openUserModal();
+                } else {
+                    alert('Lỗi: Không thể lấy thông tin người dùng.');
+                }
+            },
+            error: function () {
+                alert('Không thể kết nối đến server.');
             }
+        });
+    });
+
+    // 3. Xử lý nút XÓA người dùng
+    usersTable.on('click', '.btn-delete', function () {
+        const button = $(this);
+        const userId = button.data('id');
+        const userName = button.closest('tr').find('td:eq(0)').text();
+
+        if (confirm(`Bạn có chắc chắn muốn xóa người dùng "${userName}" không?`)) {
+            $.ajax({
+                url: '/NguoiDung/Delete',
+                type: 'POST',
+                data: { id: userId },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        button.closest('tr').fadeOut(500, function () {
+                            $(this).remove();
+                        });
+                    } else {
+                        alert('Lỗi: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('Không thể kết nối đến server.');
+                }
+            });
         }
     });
 
-    // Sự kiện đóng modal
-    if (closeUserModalBtn) closeUserModalBtn.addEventListener('click', closeUserModal);
-    if (userModal) {
-        userModal.addEventListener('click', function (event) {
-            if (event.target === userModal) closeUserModal();
-        });
-    }
+    // 4. Xử lý SUBMIT FORM (cho cả Thêm và Sửa)
+    userForm.on('submit', function (event) {
+        event.preventDefault();
 
-    // Sự kiện submit form
-    if (userForm) {
-        userForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            alert('Lưu thông tin người dùng thành công! (Mô phỏng)');
-            closeUserModal();
+        const userId = $('#ma-thu-thu').val();
+        const url = userId ? '/NguoiDung/Edit' : '/NguoiDung/Create';
+        const formData = $(this).serialize();
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    closeUserModal();
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + response.message);
+                }
+            },
+            error: function () {
+                alert('Không thể kết nối đến server.');
+            }
         });
-    }
+    });
+
+    // 5. Chức năng TÌM KIẾM
+    searchInput.on('keyup', function () {
+        const value = $(this).val().toLowerCase();
+        $("#users-table tbody tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    // 6. Đóng modal
+    closeUserModalBtn.on('click', closeUserModal);
+    userModal.on('click', function (event) {
+        if (event.target === userModal[0]) {
+            closeUserModal();
+        }
+    });
 });
 
 // --- LOGIC FOR QUAN-LY-MUON-TRA.HTML (PHIÊN BẢN HOÀN CHỈNH VỚI TẤT CẢ CHỨC NĂNG) ---
@@ -797,179 +850,384 @@ $(document).ready(function () {
     });
 });
 
-// --- LOGIC FOR QUAN-LY-NXB.HTML ---
+// --- LOGIC FOR QUAN-LY-NXB.HTML (PHIÊN BẢN HOÀN CHỈNH) ---
+$(document).ready(function () {
+    const nxbModal = $('#nxb-modal');
+    if (nxbModal.length === 0) return; // Chỉ chạy code này nếu đang ở trang NXB
 
-document.addEventListener('DOMContentLoaded', function () {
-    const nxbPageIdentifier = document.getElementById('add-nxb-btn');
-    if (!nxbPageIdentifier) return;
+    // --- Lấy các phần tử ---
+    const addNxbBtn = $('#add-nxb-btn');
+    const closeNxbModalBtn = $('.close-nxb-modal');
+    const nxbModalTitle = $('#nxb-modal-title');
+    const nxbForm = $('#nxb-form');
+    const nxbTable = $('#nxb-table');
+    const searchInput = $('#nxb-search-input');
 
-    const nxbModal = document.getElementById('nxb-modal');
-    const addNxbBtn = document.getElementById('add-nxb-btn');
-    const closeNxbModalBtn = document.querySelector('.close-nxb-modal');
-    const nxbModalTitle = document.getElementById('nxb-modal-title');
-    const nxbForm = document.getElementById('nxb-form');
-    const dataTableBody = document.querySelector('.data-table-section tbody');
+    // --- Các hàm hỗ trợ ---
+    function openNxbModal() { nxbModal.addClass('show-modal'); }
+    function closeNxbModal() { nxbModal.removeClass('show-modal'); }
 
-    function openNxbModal() { if (nxbModal) nxbModal.classList.add('show-modal'); }
-    function closeNxbModal() { if (nxbModal) nxbModal.classList.remove('show-modal'); }
+    // --- Gắn sự kiện ---
 
-    addNxbBtn.addEventListener('click', function () {
-        nxbModalTitle.textContent = "Thêm Nhà Xuất Bản Mới";
-        nxbForm.reset();
-        document.getElementById('ma-nxb').readOnly = false;
+    // 1. Mở modal để THÊM NXB
+    addNxbBtn.on('click', function () {
+        nxbModalTitle.text("Thêm Nhà Xuất Bản Mới");
+        nxbForm[0].reset();
+        $('#ma-nxb-hidden').val(''); // Xóa ID ẩn
         openNxbModal();
     });
 
-    dataTableBody.addEventListener('click', function (event) {
-        const button = event.target.closest('button');
-        if (!button) return;
-        const row = button.closest('tr');
-        const maNXB = row.cells[0].textContent;
+    // 2. Mở modal để SỬA NXB
+    nxbTable.on('click', '.btn-edit', function () {
+        const nxbId = $(this).data('id');
 
-        if (button.classList.contains('btn-edit')) {
-            nxbModalTitle.textContent = "Chỉnh sửa Nhà Xuất Bản";
-            document.getElementById('ma-nxb').value = maNXB;
-            document.getElementById('ma-nxb').readOnly = true;
-            document.getElementById('ten-nxb').value = row.cells[1].textContent;
-            document.getElementById('dia-chi').value = row.cells[2].textContent;
-            document.getElementById('email-nxb').value = row.cells[3].textContent;
-            openNxbModal();
-        }
+        $.ajax({
+            url: '/NXB/GetNXBDetails',
+            type: 'GET',
+            data: { id: nxbId },
+            success: function (response) {
+                if (response.success) {
+                    const data = response.data;
+                    nxbModalTitle.text("Chỉnh sửa Nhà Xuất Bản");
+                    nxbForm[0].reset();
 
-        if (button.classList.contains('btn-delete')) {
-            if (confirm(`Bạn có chắc chắn muốn xóa NXB [${maNXB}]?`)) {
-                row.remove();
-                alert('Xóa NXB thành công!');
+                    // Điền dữ liệu vào form
+                    $('#ma-nxb-hidden').val(data.MaNXB);
+                    $('#ten-nxb').val(data.TenNXB);
+                    $('#dia-chi').val(data.DiaChi);
+                    $('#sdt-nxb').val(data.SoDienThoai);
+                    $('#email-nxb').val(data.Email);
+
+                    openNxbModal();
+                } else {
+                    alert('Lỗi: Không thể lấy thông tin NXB.');
+                }
+            },
+            error: function () {
+                alert('Không thể kết nối đến server.');
             }
+        });
+    });
+
+    // 3. Xử lý nút XÓA NXB
+    nxbTable.on('click', '.btn-delete', function () {
+        const button = $(this);
+        const nxbId = button.data('id');
+        const nxbName = button.closest('tr').find('td:eq(1)').text();
+
+        if (confirm(`Bạn có chắc chắn muốn xóa nhà xuất bản "${nxbName}" không?`)) {
+            $.ajax({
+                url: '/NXB/Delete',
+                type: 'POST',
+                data: { id: nxbId },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        button.closest('tr').fadeOut(500, function () {
+                            $(this).remove();
+                        });
+                    } else {
+                        alert('Lỗi: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('Không thể kết nối đến server.');
+                }
+            });
         }
     });
 
-    if (closeNxbModalBtn) closeNxbModalBtn.addEventListener('click', closeNxbModal);
-    if (nxbModal) nxbModal.addEventListener('click', e => (e.target === nxbModal) && closeNxbModal());
-    if (nxbForm) nxbForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        alert('Lưu thông tin NXB thành công!');
-        closeNxbModal();
+    // 4. Xử lý SUBMIT FORM (cho cả Thêm và Sửa)
+    nxbForm.on('submit', function (event) {
+        event.preventDefault();
+
+        const nxbId = $('#ma-nxb-hidden').val();
+        const url = nxbId ? '/NXB/Edit' : '/NXB/Create'; // Quyết định URL dựa trên việc có ID hay không
+        const formData = $(this).serialize();
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    closeNxbModal();
+                    location.reload(); // Tải lại trang để cập nhật danh sách
+                } else {
+                    alert('Lỗi: ' + response.message);
+                }
+            },
+            error: function () {
+                alert('Không thể kết nối đến server.');
+            }
+        });
+    });
+
+    // 5. Chức năng TÌM KIẾM (Client-side)
+    searchInput.on('keyup', function () {
+        const value = $(this).val().toLowerCase();
+        $("#nxb-table tbody tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    // 6. Đóng modal
+    closeNxbModalBtn.on('click', closeNxbModal);
+    nxbModal.on('click', function (event) {
+        if (event.target === nxbModal[0]) {
+            closeNxbModal();
+        }
     });
 });
 
-// --- LOGIC FOR QUAN-LY-TAC-GIA.HTML ---
+// --- LOGIC FOR QUAN-LY-TAC-GIA.HTML (PHIÊN BẢN HOÀN CHỈNH) ---
+$(document).ready(function () {
+    const authorModal = $('#author-modal');
+    if (authorModal.length === 0) return; // Chỉ chạy code này nếu đang ở trang Tác giả
 
-document.addEventListener('DOMContentLoaded', function () {
-    const authorPageIdentifier = document.getElementById('add-author-btn');
-    if (!authorPageIdentifier) return;
+    // --- Lấy các phần tử ---
+    const addAuthorBtn = $('#add-author-btn');
+    const closeAuthorModalBtn = $('.close-author-modal');
+    const authorModalTitle = $('#author-modal-title');
+    const authorForm = $('#author-form');
+    const authorTable = $('#author-table');
+    const searchInput = $('#author-search-input');
 
-    const authorModal = document.getElementById('author-modal');
-    const addAuthorBtn = document.getElementById('add-author-btn');
-    const closeAuthorModalBtn = document.querySelector('.close-author-modal');
-    const authorModalTitle = document.getElementById('author-modal-title');
-    const authorForm = document.getElementById('author-form');
-    const dataTableBody = document.querySelector('.data-table-section tbody');
+    // --- Các hàm hỗ trợ ---
+    function openAuthorModal() { authorModal.addClass('show-modal'); }
+    function closeAuthorModal() { authorModal.removeClass('show-modal'); }
 
-    function openAuthorModal() { if (authorModal) authorModal.classList.add('show-modal'); }
-    function closeAuthorModal() { if (authorModal) authorModal.classList.remove('show-modal'); }
+    // --- Gắn sự kiện ---
 
-    addAuthorBtn.addEventListener('click', function () {
-        authorModalTitle.textContent = "Thêm Tác giả Mới";
-        authorForm.reset();
-        document.getElementById('ma-tac-gia').readOnly = false;
+    // 1. Mở modal để THÊM tác giả
+    addAuthorBtn.on('click', function () {
+        authorModalTitle.text("Thêm Tác giả Mới");
+        authorForm[0].reset();
+        $('#ma-tac-gia').val(''); // Xóa ID ẩn
         openAuthorModal();
     });
 
-    dataTableBody.addEventListener('click', function (event) {
-        const button = event.target.closest('button');
-        if (!button) return;
-        const row = button.closest('tr');
-        const maTacGia = row.cells[0].textContent;
+    // 2. Mở modal để SỬA tác giả
+    authorTable.on('click', '.btn-edit', function () {
+        const authorId = $(this).data('id');
 
-        if (button.classList.contains('btn-edit')) {
-            authorModalTitle.textContent = "Chỉnh sửa Tác giả";
-            document.getElementById('ma-tac-gia').value = maTacGia;
-            document.getElementById('ma-tac-gia').readOnly = true;
-            document.getElementById('ten-tac-gia').value = row.cells[1].textContent;
-            document.getElementById('thong-tin-lien-he').value = row.cells[2].textContent;
-            openAuthorModal();
-        }
+        $.ajax({
+            url: '/TacGia/GetTacGiaDetails',
+            type: 'GET',
+            data: { id: authorId },
+            success: function (response) {
+                if (response.success) {
+                    const data = response.data;
+                    authorModalTitle.text("Chỉnh sửa Tác giả");
+                    authorForm[0].reset();
 
-        if (button.classList.contains('btn-delete')) {
-            if (confirm(`Bạn có chắc chắn muốn xóa tác giả [${maTacGia}]?`)) {
-                row.remove();
-                alert('Xóa tác giả thành công!');
+                    // Điền dữ liệu vào form
+                    $('#ma-tac-gia').val(data.MaTacGia);
+                    $('#ten-tac-gia').val(data.TenTacGia);
+                    $('#tieu-su').val(data.TieuSu);
+
+                    openAuthorModal();
+                } else {
+                    alert('Lỗi: Không thể lấy thông tin tác giả.');
+                }
+            },
+            error: function () {
+                alert('Không thể kết nối đến server.');
             }
+        });
+    });
+
+    // 3. Xử lý nút XÓA tác giả
+    authorTable.on('click', '.btn-delete', function () {
+        const button = $(this);
+        const authorId = button.data('id');
+        const authorName = button.closest('tr').find('td:eq(1)').text();
+
+        if (confirm(`Bạn có chắc chắn muốn xóa tác giả "${authorName}" không?`)) {
+            $.ajax({
+                url: '/TacGia/Delete',
+                type: 'POST',
+                data: { id: authorId },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        button.closest('tr').fadeOut(500, function () {
+                            $(this).remove();
+                        });
+                    } else {
+                        alert('Lỗi: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('Không thể kết nối đến server.');
+                }
+            });
         }
     });
 
-    if (closeAuthorModalBtn) closeAuthorModalBtn.addEventListener('click', closeAuthorModal);
-    if (authorModal) authorModal.addEventListener('click', e => (e.target === authorModal) && closeAuthorModal());
-    if (authorForm) authorForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        alert('Lưu thông tin tác giả thành công!');
-        closeAuthorModal();
+    // 4. Xử lý SUBMIT FORM (cho cả Thêm và Sửa)
+    authorForm.on('submit', function (event) {
+        event.preventDefault();
+
+        const authorId = $('#ma-tac-gia').val();
+        const url = authorId ? '/TacGia/Edit' : '/TacGia/Create';
+        const formData = $(this).serialize();
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    closeAuthorModal();
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + response.message);
+                }
+            },
+            error: function () {
+                alert('Không thể kết nối đến server.');
+            }
+        });
+    });
+
+    // 5. Chức năng TÌM KIẾM (Client-side)
+    searchInput.on('keyup', function () {
+        const value = $(this).val().toLowerCase();
+        $("#author-table tbody tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    // 6. Đóng modal
+    closeAuthorModalBtn.on('click', closeAuthorModal);
+    authorModal.on('click', function (event) {
+        if (event.target === authorModal[0]) {
+            closeAuthorModal();
+        }
     });
 });
+// --- LOGIC FOR QUAN-LY-VI-PHAM.HTML (PHIÊN BẢN CUỐI CÙNG VỚI CHỨC NĂNG SỬA) ---
+$(document).ready(function () {
+    const violationModal = $('#violation-modal');
+    if (violationModal.length === 0) return;
 
-// --- LOGIC FOR QUAN-LY-VI-PHAM.HTML ---
+    const addViolationBtn = $('#add-violation-btn');
+    const closeViolationModalBtn = $('.close-violation-modal');
+    const violationModalTitle = $('#violation-modal-title');
+    const violationForm = $('#violation-form');
+    const violationTable = $('#violation-table');
+    const searchInput = $('#violation-search-input');
+    const filterStatus = $('#violation-filter-status');
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Chỉ chạy code này nếu đang ở trang Quản lý Vi phạm
-    const violationPageIdentifier = document.getElementById('add-violation-btn');
-    if (!violationPageIdentifier) return;
+    function openViolationModal() { violationModal.addClass('show-modal'); }
+    function closeViolationModal() { violationModal.removeClass('show-modal'); }
 
-    // Lấy các phần tử DOM
-    const violationModal = document.getElementById('violation-modal');
-    const addViolationBtn = document.getElementById('add-violation-btn');
-    const closeViolationModalBtn = document.querySelector('.close-violation-modal');
-    const violationModalTitle = document.getElementById('violation-modal-title');
-    const violationForm = document.getElementById('violation-form');
-    const dataTableBody = document.querySelector('.data-table-section tbody');
-
-    function openViolationModal() { if (violationModal) violationModal.classList.add('show-modal'); }
-    function closeViolationModal() { if (violationModal) violationModal.classList.remove('show-modal'); }
-
-    // ACTION 1: Mở modal để LẬP PHIẾU PHẠT MỚI
-    addViolationBtn.addEventListener('click', function () {
-        violationModalTitle.textContent = "Lập Phiếu Phạt Mới";
-        violationForm.reset();
-        document.getElementById('ma-vi-pham').value = "VP" + Math.floor(100 + Math.random() * 900);
+    // Mở modal để LẬP PHIẾU PHẠT MỚI
+    addViolationBtn.on('click', function () {
+        violationModalTitle.text("Lập Phiếu Phạt Mới");
+        violationForm[0].reset();
+        violationForm.find('input[name="MaViPham"]').val('');
         openViolationModal();
     });
 
-    // SỬ DỤNG EVENT DELEGATION cho các nút trong bảng
-    dataTableBody.addEventListener('click', function (event) {
-        const button = event.target.closest('button');
-        if (!button) return;
-        const row = button.closest('tr');
-        const maVP = row.cells[0].textContent;
+    // Mở modal để SỬA PHIẾU PHẠT
+    violationTable.on('click', '.btn-edit', function () {
+        const violationId = $(this).data('id');
+        $.ajax({
+            url: '/XuLyViPham/GetViPhamDetails', type: 'GET', data: { id: violationId },
+            success: function (response) {
+                if (response.success) {
+                    const data = response.data;
+                    violationModalTitle.text("Chỉnh sửa Phiếu Phạt #VP" + data.MaViPham.toString().padStart(3, '0'));
+                    violationForm[0].reset();
+                    violationForm.find('input[name="MaViPham"]').val(data.MaViPham);
+                    $('#doc-gia-vp').val(data.MaDocGia);
+                    $('#loai-vi-pham').val(data.LoaiViPham);
+                    $('#so-tien-phat').val(data.HinhThucPhat);
+                    $('#ghi-chu-vp').val(data.GhiChu);
+                    openViolationModal();
+                } else { alert('Lỗi: ' + response.message); }
+            },
+            error: function () { alert('Không thể kết nối đến server.'); }
+        });
+    });
 
-        // ACTION 2: Xử lý nút "ĐÃ TRẢ"
-        if (button.classList.contains('btn-mark-paid')) {
-            if (confirm(`Xác nhận độc giả đã thanh toán khoản phạt cho phiếu [${maVP}]?`)) {
-                const statusCell = row.querySelector('.status');
-                statusCell.className = 'status paid';
-                statusCell.textContent = 'Đã thanh toán';
-                button.remove(); // Xóa nút "Đã trả" sau khi đã xác nhận
-                alert('Cập nhật trạng thái thành công!');
-            }
-        }
-
-        // ACTION 3: Xử lý nút "XÓA"
-        if (button.classList.contains('btn-delete')) {
-            if (confirm(`Bạn có chắc chắn muốn xóa phiếu phạt [${maVP}]?`)) {
-                row.remove();
-                alert('Xóa phiếu phạt thành công!');
-            }
+    // Xử lý nút "Đã trả"
+    violationTable.on('click', '.btn-mark-paid', function () {
+        const button = $(this);
+        const violationId = button.data('id');
+        if (confirm(`Xác nhận độc giả đã thanh toán khoản phạt cho phiếu [VP${violationId.toString().padStart(3, '0')}]?`)) {
+            $.ajax({
+                url: '/XuLyViPham/MarkAsPaid', type: 'POST', data: { id: violationId },
+                success: function (response) {
+                    if (response.success) { alert(response.message); location.reload(); }
+                    else { alert('Lỗi: ' + response.message); }
+                },
+                error: function () { alert('Không thể kết nối đến server.'); }
+            });
         }
     });
 
-    // Sự kiện đóng modal
-    if (closeViolationModalBtn) closeViolationModalBtn.addEventListener('click', closeViolationModal);
-    if (violationModal) violationModal.addEventListener('click', e => (e.target === violationModal) && closeViolationModal());
+    // Xử lý nút XÓA
+    violationTable.on('click', '.btn-delete', function () {
+        const button = $(this);
+        const violationId = button.data('id');
+        if (confirm(`Bạn có chắc chắn muốn xóa phiếu phạt [VP${violationId.toString().padStart(3, '0')}] không?`)) {
+            $.ajax({
+                url: '/XuLyViPham/Delete', type: 'POST', data: { id: violationId },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        button.closest('tr').fadeOut(500, function () { $(this).remove(); });
+                    } else { alert('Lỗi: ' + response.message); }
+                },
+                error: function () { alert('Không thể kết nối đến server.'); }
+            });
+        }
+    });
 
-    // Sự kiện submit form
-    if (violationForm) violationForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        alert('Lưu thông tin phiếu phạt thành công!');
-        closeViolationModal();
+    // Xử lý SUBMIT FORM (cho cả Thêm và Sửa)
+    violationForm.on('submit', function (event) {
+        event.preventDefault();
+        const violationId = $(this).find('input[name="MaViPham"]').val();
+        const url = violationId ? '/XuLyViPham/Edit' : '/XuLyViPham/Create';
+        const formData = $(this).serialize();
+        $.ajax({
+            url: url, type: 'POST', data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    closeViolationModal();
+                    location.reload();
+                } else { alert('Lỗi: ' + response.message); }
+            },
+            error: function () { alert('Không thể kết nối đến server.'); }
+        });
+    });
+
+    // LỌC và TÌM KIẾM
+    function filterTable() {
+        const searchText = searchInput.val().toLowerCase();
+        const statusFilter = filterStatus.val();
+        $("#violation-table tbody tr").each(function () {
+            const row = $(this);
+            const rowText = row.text().toLowerCase();
+            const rowStatus = row.find('td:eq(5)').text().trim();
+            const textMatch = rowText.indexOf(searchText) > -1;
+            const statusMatch = (statusFilter === 'all' || statusFilter === '' || rowStatus === statusFilter);
+            if (textMatch && statusMatch) { row.show(); } else { row.hide(); }
+        });
+    }
+    searchInput.on('keyup', filterTable);
+    filterStatus.on('change', filterTable);
+
+    // Đóng modal
+    closeViolationModalBtn.on('click', closeViolationModal);
+    violationModal.on('click', function (event) {
+        if (event.target === violationModal[0]) { closeViolationModal(); }
     });
 });
 // --- LOGIC FOR CAI-DAT-HE-THONG.HTML ---

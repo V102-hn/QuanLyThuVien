@@ -1,55 +1,150 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using QuanLyThuVien.Models;      // Thêm dòng này
-using QuanLyThuVien.ViewModels; // Thêm dòng này
-using System.Data.Entity;         // Thêm dòng này để dùng .Include()
+using QuanLyThuVien.Models;
+using QuanLyThuVien.ViewModels;
+using System.Data.Entity;
+
 namespace QuanLyThuVien.Controllers
 {
     public class XuLyViPhamController : Controller
     {
         private readonly QuanLyThuVienEntities db = new QuanLyThuVienEntities();
+
         // GET: XuLyViPham
         public ActionResult Index()
         {
-            // === GIAI ĐOẠN 1: LẤY DỮ LIỆU THÔ TỪ DATABASE ===
-            // Chọn ra các trường cần thiết và thực thi câu lệnh SQL với .ToList()
-            var danhSachTho = db.ViPhams
+            var danhSachViPham = db.ViPhams
                 .Include(vp => vp.DocGia)
-                .Select(vp => new // Sử dụng một kiểu dữ liệu tạm thời (anonymous type)
-        {
-                    vp.MaViPham,
-                    vp.DocGia.HoTen,
-                    vp.LoaiViPham,
-                    vp.HinhThucPhat,
-                    vp.NgayViPham,
-                    vp.TrangThaiXuLy // Chỉ lấy chuỗi gốc
-        })
-                .ToList(); // <-- Điểm quan trọng: thực thi SQL và mang dữ liệu về bộ nhớ
-
-            // === GIAI ĐOẠN 2: XỬ LÝ VÀ ĐỊNH DẠNG TRONG BỘ NHỚ ===
-            // Bây giờ 'danhSachTho' là một List, chúng ta có thể dùng LINQ-to-Objects
-            // và mọi tính năng của C#
-            var danhSachViPham = danhSachTho
+                .OrderByDescending(vp => vp.NgayViPham)
+                .ToList() // Lấy dữ liệu về bộ nhớ
                 .Select(vp => new ViPhamViewModel
                 {
+                    MaViPhamRaw = vp.MaViPham, // Lưu ID gốc
                     MaViPham = "VP" + vp.MaViPham.ToString("D3"),
-                    TenDocGia = vp.HoTen,
+                    TenDocGia = vp.DocGia?.HoTen,
                     LoaiViPham = vp.LoaiViPham,
                     SoTienPhat = vp.HinhThucPhat.HasValue ? vp.HinhThucPhat.Value.ToString("N0") + "đ" : "0đ",
                     NgayGhiNhan = vp.NgayViPham,
-
-            // Đoạn code này bây giờ chạy trong bộ nhớ nên hoàn toàn hợp lệ
-            TrangThai = "đã thanh toán".Equals(vp.TrangThaiXuLy?.Trim(), StringComparison.OrdinalIgnoreCase)
-                                ? "Đã thanh toán"
-                                : "Chưa thanh toán"
+                    TrangThai = "đã thanh toán".Equals(vp.TrangThaiXuLy?.Trim(), StringComparison.OrdinalIgnoreCase)
+                                ? "Đã thanh toán" : "Chưa thanh toán"
                 })
-                .OrderByDescending(vp => vp.NgayGhiNhan)
                 .ToList();
 
-            return View(danhSachViPham);
+            var viewModel = new XuLyViPhamPageViewModel
+            {
+                DanhSachViPham = danhSachViPham,
+                DanhSachDocGia = db.DocGias
+                                   .Where(dg => dg.DaXoa == false)
+                                   .Select(dg => new SelectListItem
+                                   {
+                                       Value = dg.MaDocGia.ToString(),
+                                       Text = dg.MaDocGia + " - " + dg.HoTen
+                                   }).ToList()
+            };
+            return View(viewModel);
+        }
+
+        // POST: XuLyViPham/Create
+        [HttpPost]
+        public ActionResult Create(ViPham viPham)
+        {
+            try
+            {
+                viPham.NgayViPham = DateTime.Now;
+                viPham.TrangThaiXuLy = "Chưa thanh toán";
+
+                db.ViPhams.Add(viPham);
+                db.SaveChanges();
+                return Json(new { success = true, message = "Lập phiếu phạt thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+            }
+        }
+
+        // POST: XuLyViPham/MarkAsPaid/5
+        [HttpPost]
+        public ActionResult MarkAsPaid(int id)
+        {
+            try
+            {
+                var viPham = db.ViPhams.Find(id);
+                if (viPham == null) return Json(new { success = false, message = "Không tìm thấy vi phạm." });
+
+                viPham.TrangThaiXuLy = "đã thanh toán";
+                db.SaveChanges();
+                return Json(new { success = true, message = "Cập nhật trạng thái thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+            }
+        }
+
+        // POST: XuLyViPham/Delete/5
+        [HttpPost]
+        public ActionResult Delete(int id)
+        {
+            try
+            {
+                var viPham = db.ViPhams.Find(id);
+                if (viPham == null) return Json(new { success = false, message = "Không tìm thấy vi phạm." });
+
+                db.ViPhams.Remove(viPham);
+                db.SaveChanges();
+                return Json(new { success = true, message = "Xóa phiếu phạt thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+            }
+        }
+        [HttpGet]
+        public ActionResult GetViPhamDetails(int id)
+        {
+            var viPham = db.ViPhams.Find(id);
+            if (viPham == null)
+            {
+                return HttpNotFound();
+            }
+            // Trả về dữ liệu cần thiết cho form sửa
+            var result = new
+            {
+                viPham.MaViPham,
+                viPham.MaDocGia,
+                viPham.LoaiViPham,
+                viPham.HinhThucPhat
+            };
+            return Json(new { success = true, data = result }, JsonRequestBehavior.AllowGet);
+        }
+
+        // POST: XuLyViPham/Edit
+        [HttpPost]
+        public ActionResult Edit(ViPham viPham)
+        {
+            try
+            {
+                var existingViPham = db.ViPhams.Find(viPham.MaViPham);
+                if (existingViPham == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy phiếu phạt." });
+                }
+
+                // Cập nhật các trường được phép sửa
+                existingViPham.MaDocGia = viPham.MaDocGia;
+                existingViPham.LoaiViPham = viPham.LoaiViPham;
+                existingViPham.HinhThucPhat = viPham.HinhThucPhat;
+                // Ngày vi phạm và Trạng thái thường không được sửa
+
+                db.SaveChanges();
+                return Json(new { success = true, message = "Cập nhật phiếu phạt thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+            }
         }
     }
 }

@@ -1,36 +1,31 @@
-﻿@model IEnumerable<QuanLyThuVien.ViewModels.ViPhamViewModel>
+﻿@model QuanLyThuVien.ViewModels.XuLyViPhamPageViewModel
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Xử lý Vi phạm";
     Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
 }
 
-<!-- ======================= PHẦN GIAO DIỆN CHUNG (ĐÃ BỔ SUNG) ======================= -->
 @Html.Action("HeaderPartialView", "Admin")
 
-<!-- ===================== KẾT THÚC PHẦN GIAO DIỆN CHUNG ===================== -->
-
 <div class="admin-container">
-    <!-- Sidebar -->
     @Html.Action("SidebarPartiView", "Admin")
 
-    <!-- Nội dung chính -->
     <main class="admin-main-content">
         <h1><i class="fas fa-gavel"></i> Xử lý Vi phạm</h1>
 
         <div class="toolbar">
             <div class="search-filter-group">
-                <input type="text" class="search-input" placeholder="Tìm kiếm theo mã VP, tên độc giả...">
-                <select class="filter-status">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="unpaid">Chưa thanh toán</option>
-                    <option value="paid">Đã thanh toán</option>
+                <input type="text" id="violation-search-input" class="search-input" placeholder="Tìm kiếm...">
+                <select id="violation-filter-status" class="filter-status">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="Chưa thanh toán">Chưa thanh toán</option>
+                    <option value="Đã thanh toán">Đã thanh toán</option>
                 </select>
             </div>
             <button id="add-violation-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Lập Phiếu Phạt</button>
         </div>
 
         <section class="data-table-section">
-            <table>
+            <table id="violation-table">
                 <thead>
                     <tr>
                         <th>Mã Vi Phạm</th>
@@ -39,12 +34,11 @@
                         <th>Số Tiền Phạt</th>
                         <th>Ngày Ghi Nhận</th>
                         <th>Trạng Thái</th>
-                        <th>Hành Động</th>
+                        <th style="width: 200px;">Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Dùng vòng lặp để hiển thị dữ liệu động -->
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.DanhSachViPham)
                     {
                         <tr>
                             <td>@item.MaViPham</td>
@@ -53,28 +47,22 @@
                             <td>@item.SoTienPhat</td>
                             <td>@item.NgayGhiNhan.ToString("dd/MM/yyyy")</td>
                             <td>
-                                <!-- Hiển thị Trạng thái và class CSS tương ứng -->
                                 @if (item.TrangThai == "Đã thanh toán")
-                                {
-                                    <span class="status paid">Đã thanh toán</span>
-                                }
+                                {<span class="status paid">Đã thanh toán</span> }
                                 else
-                                {
-                                    <span class="status unpaid">Chưa thanh toán</span>
-                                }
+                                { <span class="status unpaid">Chưa thanh toán</span>}
                             </td>
                             <td class="action-buttons">
-                                <!-- Chỉ hiển thị nút 'Đã trả' khi chưa thanh toán -->
                                 @if (item.TrangThai == "Chưa thanh toán")
                                 {
-                                    <button class="btn btn-success btn-mark-paid"><i class="fas fa-check"></i> Đã trả</button>
+                                    <button class="btn btn-success btn-mark-paid" data-id="@item.MaViPhamRaw"><i class="fas fa-check"></i> Đã trả</button>
+                                    <button class="btn btn-warning btn-edit" title="Chỉnh sửa" data-id="@item.MaViPhamRaw"><i class="fas fa-edit"></i></button>
                                 }
-                                <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                                <button class="btn btn-delete" title="Xóa" data-id="@item.MaViPhamRaw"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
                     }
                 </tbody>
-
             </table>
         </section>
     </main>
@@ -86,22 +74,36 @@
         <span class="close-violation-modal">&times;</span>
         <h2 id="violation-modal-title">Lập Phiếu Phạt Mới</h2>
         <form id="violation-form">
+            <input type="hidden" name="MaViPham" />
             <div class="form-row">
-                <div class="form-group"><label for="ma-vi-pham">Mã Vi Phạm:</label><input type="text" id="ma-vi-pham" readonly></div>
-                <div class="form-group"><label for="doc-gia-vp">Độc Giả:</label><select id="doc-gia-vp" required><option value="">-- Chọn độc giả --</option><option value="DG001">DG001 - Nguyễn Văn An</option><option value="DG003">DG003 - Lê Hữu Cường</option></select></div>
+                <div class="form-group">
+                    <label>Mã Vi Phạm:</label>
+                    <input type="text" class="form-control" readonly placeholder="Tự động tạo">
+                </div>
+                <div class="form-group">
+                    <label for="doc-gia-vp">Độc Giả:</label>
+                    @Html.DropDownList("MaDocGia", Model.DanhSachDocGia, "-- Chọn độc giả --", new { @class = "form-control", id = "doc-gia-vp", required = "required" })
+                </div>
             </div>
             <div class="form-row">
-                <div class="form-group"><label for="loai-vi-pham">Loại Vi Phạm:</label><select id="loai-vi-pham" required><option value="late">Trả sách quá hạn</option><option value="damage">Làm hỏng sách</option><option value="lost">Làm mất sách</option></select></div>
-                <div class="form-group"><label for="so-tien-phat">Số Tiền Phạt (VNĐ):</label><input type="number" id="so-tien-phat" required></div>
+                <div class="form-group">
+                    <label for="loai-vi-pham">Loại Vi Phạm:</label>
+                    <select id="loai-vi-pham" name="LoaiViPham" class="form-control" required>
+                        <option value="Trả sách quá hạn">Trả sách quá hạn</option>
+                        <option value="Làm hỏng sách">Làm hỏng sách</option>
+                        <option value="Làm mất sách">Làm mất sách</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="so-tien-phat">Số Tiền Phạt (VNĐ):</label>
+                    <input type="number" id="so-tien-phat" name="HinhThucPhat" class="form-control" required>
+                </div>
+            </div>   
+            <div class="form-buttons" style="justify-content: flex-end;">
+                <button type="submit" class="btn btn-primary">Lưu Phiếu Phạt</button>
             </div>
-            <div class="form-group"><label for="ghi-chu-vp">Ghi Chú:</label><textarea id="ghi-chu-vp" rows="3"></textarea></div>
-            <button type="submit" class="submit-btn">Lưu Phiếu Phạt</button>
         </form>
     </div>
 </div>
 
-<!-- ======================= FOOTER (ĐÃ BỔ SUNG) ======================= -->
-<footer>
-    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
-    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
-</footer>
+@Html.Partial("_FooterPartial")

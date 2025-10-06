@@ -1,62 +1,46 @@
-﻿@*< !--(1) Khai báo Model mà View này sẽ nhận -->*@
-@model IEnumerable<QuanLyThuVien.Models.TacGia>
-
-
+﻿@model IEnumerable<QuanLyThuVien.Models.TacGia>
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Quản lý Tác giả";
     Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
 }
 
-<!-- ======================= PHẦN GIAO DIỆN CHUNG (ĐÃ BỔ SUNG) ======================= -->
 @Html.Action("HeaderPartialView", "Admin")
-<!-- ===================== KẾT THÚC PHẦN GIAO DIỆN CHUNG ===================== -->
 
 <div class="admin-container">
-    <!-- Sidebar -->
     @Html.Action("SidebarPartiView", "Admin")
 
-
-    <!-- Nội dung chính -->
     <main class="admin-main-content">
         <h1><i class="fas fa-user-pen"></i> Quản lý Tác giả</h1>
         <div class="toolbar">
-            <input type="text" class="search-input" placeholder="Tìm kiếm theo tên tác giả...">
+            <input type="text" id="author-search-input" class="search-input" placeholder="Tìm kiếm theo tên tác giả...">
             <button id="add-author-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm Tác giả Mới</button>
         </div>
 
         <section class="data-table-section">
-            <table>
+            <table id="author-table">
+                @* Thêm ID cho bảng *@
                 <thead>
                     <tr>
                         <th>Mã Tác giả</th>
                         <th>Tên Tác giả</th>
-                        <th>Thông tin liên hệ</th>
-                        <th>Hành Động</th>
+                        <th>Tiểu sử/Liên hệ</th>
+                        <th style="width: 150px;">Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- (2) Dùng vòng lặp để duyệt qua danh sách tác giả -->
-                    @if (!Model.Any())
+                    @* Dùng vòng lặp để hiển thị dữ liệu động từ Model *@
+                    @foreach (var item in Model)
                     {
                         <tr>
-                            <td colspan="4" class="text-center">Không có dữ liệu tác giả.</td>
+                            <td>@item.MaTacGia</td>
+                            <td>@item.TenTacGia</td>
+                            <td>@item.TieuSu</td>
+                            <td class="action-buttons">
+                                @* THÊM data-id VÀO CÁC NÚT *@
+                                <button class="btn btn-edit" title="Chỉnh sửa" data-id="@item.MaTacGia"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-delete" title="Xóa" data-id="@item.MaTacGia"><i class="fas fa-trash"></i></button>
+                            </td>
                         </tr>
-                    }
-                    else
-                    {
-                        foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>@item.MaTacGia</td>
-                                <td>@item.TenTacGia</td>
-                                <td>@item.TieuSu</td> <!-- (3) Hiển thị dữ liệu từ CSDL -->
-                                <td class="action-buttons">
-                                    <!-- Sẽ thêm link cho các nút này sau -->
-                                    <button class="btn btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-delete" title="Xóa"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        }
                     }
                 </tbody>
             </table>
@@ -64,22 +48,27 @@
     </main>
 </div>
 
-<!-- Modal cho Tác giả -->
+<!-- Modal cho Tác giả (ĐÃ SỬA LẠI NAME) -->
 <div id="author-modal" class="modal">
     <div class="modal-content large">
         <span class="close-author-modal">&times;</span>
         <h2 id="author-modal-title">Thêm Tác giả Mới</h2>
         <form id="author-form">
-            <div class="form-row"><div class="form-group"><label for="ma-tac-gia">Mã Tác giả:</label><input type="text" id="ma-tac-gia" required></div><div class="form-group"><label for="ten-tac-gia">Tên Tác giả:</label><input type="text" id="ten-tac-gia" required></div></div>
-            <div class="form-group"><label for="thong-tin-lien-he">Thông tin liên hệ (Email, SĐT...):</label><input type="text" id="thong-tin-lien-he"></div>
-            <button type="submit" class="submit-btn">Lưu Lại</button>
+            <input type="hidden" id="ma-tac-gia" name="MaTacGia" />
+
+            <div class="form-group">
+                <label for="ten-tac-gia">Tên Tác giả:</label>
+                <input type="text" id="ten-tac-gia" name="TenTacGia" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="tieu-su">Tiểu sử/Thông tin liên hệ:</label>
+                <textarea id="tieu-su" name="TieuSu" class="form-control" rows="4"></textarea>
+            </div>
+            <div class="form-buttons" style="justify-content: flex-end;">
+                <button type="submit" class="btn btn-primary">Lưu Lại</button>
+            </div>
         </form>
     </div>
 </div>
 
-<!-- ======================= FOOTER (ĐÃ BỔ SUNG) ======================= -->
-<footer>
-    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
-    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
-</footer>
-
+@Html.Partial("_FooterPartial")

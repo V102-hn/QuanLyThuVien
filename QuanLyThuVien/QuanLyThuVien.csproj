@@ -216,6 +216,7 @@
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\SachViewModel.cs" />
     <Compile Include="ViewModels\ViPhamViewModel.cs" />
+    <Compile Include="ViewModels\XuLyViPhamPageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
