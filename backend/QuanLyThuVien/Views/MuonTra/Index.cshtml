@@ -1,0 +1,115 @@
+﻿@model QuanLyThuVien.ViewModels.QuanLyMuonTraViewModel
+@{
+    ViewBag.Title = "Quản lý Mượn Trả";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+@Html.Action("HeaderPartialView", "Admin")
+
+<div class="admin-container">
+    @Html.Action("SidebarPartiView", "Admin")
+
+    <main class="admin-main-content">
+        <h1><i class="fas fa-exchange-alt"></i> Quản lý Mượn/Trả Sách</h1>
+        <div class="toolbar">
+            <button id="add-loan-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Tạo Phiếu Mượn</button>
+        </div>
+        <section class="data-table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã Phiếu</th>
+                        <th>Tên Độc Giả</th>
+                        <th>Ngày Mượn</th>
+                        <th>Ngày Hẹn Trả</th>
+                        <th>Trạng Thái</th>
+                        <th style="width: 260px;">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @* THAY ĐỔI: Vòng lặp bây giờ duyệt qua Model.DanhSachPhieuMuon *@
+                    @foreach (var phieu in Model.DanhSachPhieuMuon)
+                    {
+                        <tr>
+                            <td>@phieu.MaPhieu</td>
+                            <td>@phieu.TenDocGia</td>
+                            <td>@phieu.NgayMuon.ToString("dd/MM/yyyy")</td>
+                            <td>@phieu.NgayHenTra.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (phieu.TrangThai == "Đã trả")
+                                {<span class="status returned">Đã trả</span> }
+                                else if (phieu.TrangThai == "Quá hạn")
+                                { <span class="status overdue">Quá hạn</span> }
+                                else
+                                { <span class="status borrowed">Đang mượn</span>}
+                            </td>
+                            <td class="action-buttons">
+                                <button class="btn btn-info btn-view-details" data-id="@phieu.MaPhieu"><i class="fas fa-eye"></i> Chi tiết</button>
+                                @if (phieu.TrangThai != "Đã trả")
+                                {
+                                    <button class="btn btn-warning btn-edit" data-id="@phieu.MaPhieu"><i class="fas fa-edit"></i> Sửa</button>
+                                    <button class="btn btn-success btn-mark-returned" data-id="@phieu.MaPhieu"><i class="fas fa-check"></i> Trả sách</button>
+                                }
+                                <button class="btn btn-danger btn-delete" data-id="@phieu.MaPhieu"><i class="fas fa-trash"></i> Xóa</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+
+@Html.Partial("_FooterPartial")
+
+
+<!-- MODAL ĐÃ CẬP NHẬT DÙNG DỮ LIỆU ĐỘNG -->
+<div id="loan-modal" class="modal">
+    <div class="modal-content large">
+        <span class="close-loan-modal">&times;</span>
+        <h2 id="loan-modal-title">Tạo Phiếu Mượn Mới</h2>
+        <form id="loan-form">
+            <input type="hidden" id="ma-muon-tra-id" name="MaMuonTra" />
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ma-phieu">Mã Phiếu Mượn</label>
+                    <input type="text" id="ma-phieu" readonly placeholder="Tự động tạo">
+                </div>
+                <div class="form-group">
+                    <label for="doc-gia-select">Chọn Độc Giả</label>
+                    @* THAY ĐỔI: Dùng Html helper để tạo dropdown từ Model.DanhSachDocGia *@
+                    @Html.DropDownList("MaDocGia", Model.DanhSachDocGia, "-- Chọn độc giả --", new { id = "doc-gia-select", required = "required" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ngay-muon">Ngày Mượn</label>
+                    <input type="date" id="ngay-muon" name="NgayMuon" required>
+                </div>
+                <div class="form-group">
+                    <label for="ngay-hen-tra">Ngày Hẹn Trả</label>
+                    <input type="date" id="ngay-hen-tra" name="NgayHenTra" required>
+                </div>
+            </div>
+            <hr>
+            <h4>Danh sách sách mượn</h4>
+            <div class="book-selection-area">
+                <div class="form-group">
+                    <label for="sach-select">Chọn Sách</label>
+                    @* THAY ĐỔI: Dùng Html helper để tạo dropdown từ Model.DanhSachSach *@
+                    @Html.DropDownList("SachId", Model.DanhSachSach, "-- Tìm và chọn sách --", new { id = "sach-select" })
+                </div>
+                <button type="button" id="add-book-to-list-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm sách</button>
+            </div>
+            <div class="selected-books-container"><ul id="selected-books-list"></ul></div>
+            <div class="form-group">
+                <label for="ghi-chu">Ghi Chú</label>
+                <textarea id="ghi-chu" name="GhiChu" rows="3"></textarea>
+            </div>
+            <div class="form-buttons" style="justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary close-loan-modal-btn">Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu Phiếu Mượn</button>
+            </div>
+        </form>
+    </div>
+</div>

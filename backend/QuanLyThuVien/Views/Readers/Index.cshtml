@@ -1,0 +1,119 @@
+﻿@model IEnumerable<QuanLyThuVien.Models.DocGia>
+@{
+    ViewBag.Title = "Quản lý Độc giả";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+@Html.Action("HeaderPartialView", "Admin")
+
+<div class="admin-container">
+    @Html.Action("SidebarPartiView", "Admin")
+
+    <main class="admin-main-content">
+        <h1><i class="fas fa-users"></i> Quản lý Độc giả</h1>
+
+        <div class="toolbar">
+            <button id="add-reader-btn" class="btn btn-primary"><i class="fas fa-user-plus"></i> Thêm Độc giả Mới</button>
+        </div>
+
+        <section class="data-table-section">
+            <table id="readers-table">
+                @* Thêm ID cho bảng *@
+                <thead>
+                    <tr>
+                        <th>Mã Độc giả</th>
+                        <th>Họ Tên</th>
+                        <th>Lớp</th>
+                        <th>Email</th>
+                        <th>Tình Trạng Thẻ</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var docgia in Model)
+                    {
+                        <tr>
+                            <td>@docgia.MaDocGia</td>
+                            <td>@docgia.HoTen</td>
+                            <td>@docgia.Lop</td>
+                            <td>@docgia.Email</td>
+                            <td>
+                                @if (docgia.DaXoa == true)
+                                {<span class="status locked-card">Bị khóa</span> }
+                                else
+                                { <span class="status active-card">Hoạt động</span>}
+                            </td>
+                            <td class="action-buttons">
+                                @* THÊM data-id VÀO CÁC NÚT *@
+                                <button class="btn btn-edit" title="Chỉnh sửa" data-id="@docgia.MaDocGia"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-delete" title="Xóa" data-id="@docgia.MaDocGia"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+
+<!-- MODAL ĐỂ THÊM/SỬA ĐỘC GIẢ -->
+<div id="reader-modal" class="modal">
+    <div class="modal-content large">
+        <span class="close-reader-modal">&times;</span>
+        <h2 id="reader-modal-title">Thêm Độc giả Mới</h2>
+        <form id="reader-form">
+            @* Thêm input ẩn để lưu MaDocGia khi sửa *@
+            <input type="hidden" id="ma-doc-gia" name="MaDocGia" />
+
+            <div class="form-row">
+                <div class="form-group">
+                    @* SỬA LẠI NAME CHO KHỚP VỚI MODEL *@
+                    <label for="ho-ten">Họ và Tên:</label>
+                    <input type="text" id="ho-ten" name="HoTen" required>
+                </div>
+                <div class="form-group">
+                    <label for="lop">Lớp:</label>
+                    <input type="text" id="lop" name="Lop">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="username-modal">Username:</label>
+                    <input type="text" id="username-modal" name="Username" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password-modal">Mật khẩu (để trống nếu không đổi):</label>
+                    <input type="password" id="password-modal" name="password_modal">
+                </div>
+                <div class="form-group">
+                    <label for="tinh-trang-the">Tình Trạng Thẻ:</label>
+                    @* name="DaXoa" với value là true/false *@
+                    <select id="tinh-trang-the" name="DaXoa" required>
+                        <option value="false">Hoạt động</option>
+                        <option value="true">Bị khóa</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-buttons" style="justify-content: flex-end;">
+                <button type="submit" class="btn btn-primary">Lưu Lại</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ======================= FOOTER VÀ CÁC MODAL KHÁC ======================= -->
+<footer>
+    <p>Copyright by Trung tâm Thông tin Thư viện - Trường Đại học Xây dựng Miền Trung</p>
+    <p>Điện thoại: (057).3 821 905. Email:trungtamthongtinthuvien@muce.edu.vn</p>
+</footer>
+
+<!-- Các modal dùng chung như Đăng nhập / Đăng ký -->
+<div id="login-modal" class="modal">...</div>
+<div id="signup-modal" class="modal">...</div>
+<!-- Bạn hãy copy nội dung các modal này từ file index.html dán vào đây -->

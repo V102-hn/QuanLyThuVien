@@ -1,0 +1,97 @@
+﻿@* BẮT BUỘC: Khai báo model mà View này sẽ sử dụng *@
+@model QuanLyThuVien.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewBag.Title = "Bảng điều khiển";
+    Layout = "~/Views/Layout/LayoutNguoiDung.cshtml";
+}
+
+@Html.Action("HeaderPartialView", "Admin")
+<!-- KẾT THÚC PHẦN TÁI SỬ DỤNG -->
+<!-- BỐ CỤC MỚI CHO TRANG ADMIN -->
+<div class="admin-container">
+    @Html.Action("SidebarPartiView", "Admin")
+
+    <main class="admin-main-content">
+        <h1><i class="fas fa-tachometer-alt"></i> Bảng điều khiển</h1>
+
+        <section class="stats-cards">
+            <div class="card">
+                <i class="fas fa-book card-icon" style="color: #007bff;"></i>
+                <div class="card-info">
+                    @* Dữ liệu động từ ViewModel *@
+                    <h2>@Model.TongSoSach.ToString("N0")</h2>
+                    <p>Tổng số sách</p>
+                </div>
+            </div>
+            <div class="card">
+                <i class="fas fa-users card-icon" style="color: #28a745;"></i>
+                <div class="card-info">
+                    @* Dữ liệu động từ ViewModel *@
+                    <h2>@Model.TongSoDocGia.ToString("N0")</h2>
+                    <p>Tổng số độc giả</p>
+                </div>
+            </div>
+            <div class="card">
+                <i class="fas fa-book-reader card-icon" style="color: #ffc107;"></i>
+                <div class="card-info">
+                    @* Dữ liệu động từ ViewModel *@
+                    <h2>@Model.SachDangMuon.ToString("N0")</h2>
+                    <p>Sách đang được mượn</p>
+                </div>
+            </div>
+            <div class="card">
+                <i class="fas fa-exclamation-triangle card-icon" style="color: #dc3545;"></i>
+                <div class="card-info">
+                    @* Dữ liệu động từ ViewModel *@
+                    <h2>@Model.SachQuaHan.ToString("N0")</h2>
+                    <p>Sách quá hạn</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="recent-activity">
+            <h2><i class="fas fa-history"></i> Hoạt động gần đây</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã sách</th>
+                        <th>Tên sách</th>
+                        <th>Độc giả</th>
+                        <th>Ngày mượn</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @* Dùng vòng lặp để hiển thị danh sách hoạt động từ ViewModel *@
+                    @foreach (var item in Model.HoatDongGanDay)
+                    {
+                        <tr>
+                            <td>@item.MaSach</td>
+                            <td>@item.TenSach</td>
+                            <td>@item.TenDocGia</td>
+                            <td>@item.NgayMuon.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @{
+                                    // Tự động gán class CSS dựa vào trạng thái
+                                    string statusClass = "";
+                                    if (item.TrangThai == "Đã trả") { statusClass = "returned"; }
+                                    else if (item.TrangThai == "Đang mượn") { statusClass = "borrowed"; }
+                                    else { statusClass = "overdue"; } // Giả sử trạng thái khác là "Quá hạn"
+                                }
+                                <span class="status @statusClass">@item.TrangThai</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+<!-- KẾT THÚC BỐ CỤC TRANG ADMIN -->
+<!-- Tái sử dụng Footer và các Modal -->
+@Html.Partial("_FooterPartial")
+
+<!-- Các modal đăng nhập/đăng ký vẫn có thể được sử dụng ở đây -->
+<div id="login-modal" class="modal">...</div>
+<div id="signup-modal" class="modal">...</div>
