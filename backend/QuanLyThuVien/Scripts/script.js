@@ -421,70 +421,49 @@ $(document).ready(function () {
     });
 });
 
-// --- LOGIC FOR BAO-CAO-THONG-KE.HTML ---
-
+// --- LOGIC FOR BAO-CAO-THONG-KE.HTML (PHIÊN BẢN HOÀN CHỈNH) ---
 document.addEventListener('DOMContentLoaded', function () {
-    // Chỉ chạy code này nếu tìm thấy canvas của biểu đồ trên trang
-    const loanChartCanvas = document.getElementById('loanChart');
-    if (loanChartCanvas) {
+    // Chỉ chạy code này nếu đang ở trang Báo cáo (kiểm tra bằng sự tồn tại của 1 element đặc trưng)
+    const reportPageIdentifier = document.getElementById('loanChart');
+    if (!reportPageIdentifier) return;
 
-        // --- Biểu đồ 1: Lượt mượn sách (Line Chart) ---
-        const ctxLoan = loanChartCanvas.getContext('2d');
-        new Chart(ctxLoan, {
-            type: 'line',
-            data: {
-                labels: ['Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9'],
-                datasets: [{
-                    label: 'Lượt mượn',
-                    data: [850, 920, 1100, 1050, 1210, 1280],
-                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
-                    borderColor: 'rgba(0, 123, 255, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4 // Làm cho đường cong mượt hơn
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+    // === PHẦN VẼ BIỂU ĐỒ ĐÃ CÓ SẴN TRONG VIEW, KHÔNG CẦN VIẾT LẠI Ở ĐÂY ===
+    // View của bạn đã có một section @scripts để vẽ biểu đồ với dữ liệu động từ Model.
+    // Điều đó rất tốt và nên được giữ nguyên.
+    // Đoạn code tĩnh về biểu đồ ở đây nên được xóa đi để tránh nhầm lẫn.
 
-        // --- Biểu đồ 2: Cơ cấu thể loại (Doughnut Chart) ---
-        const categoryChartCanvas = document.getElementById('categoryChart').getContext('2d');
-        new Chart(categoryChartCanvas, {
-            type: 'doughnut',
-            data: {
-                labels: ['Khoa học Máy tính', 'Kỹ thuật Xây dựng', 'Kinh tế', 'Ngoại ngữ', 'Văn học'],
-                datasets: [{
-                    label: 'Số lượng sách',
-                    data: [4500, 3200, 2500, 1560, 800],
-                    backgroundColor: [
-                        '#007bff',
-                        '#28a745',
-                        '#ffc107',
-                        '#dc3545',
-                        '#6c757d'
-                    ],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-            }
-        });
+    // === XỬ LÝ SỰ KIỆN CHO CÁC NÚT VÀ BỘ LỌC ===
 
-        // --- Xử lý sự kiện cho nút Xuất Báo cáo ---
-        const exportBtn = document.getElementById('export-report-btn');
-        if (exportBtn) {
-            exportBtn.addEventListener('click', function () {
-                alert('Chức năng đang được phát triển! Dữ liệu sẽ được xuất ra file Excel. (Mô phỏng)');
-            });
+    // 1. Xử lý sự kiện cho bộ lọc thời gian
+    const dateRangeSelect = document.getElementById('date-range');
+    if (dateRangeSelect) {
+        // Lấy filter hiện tại từ URL để set giá trị cho dropdown khi tải trang
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentFilter = urlParams.get('filter');
+        if (currentFilter) {
+            dateRangeSelect.value = currentFilter;
         }
+
+        dateRangeSelect.addEventListener('change', function () {
+            const selectedValue = this.value;
+            if (selectedValue === 'custom') {
+                alert('Chức năng lọc tùy chỉnh đang được phát triển!');
+            } else {
+                // Tải lại trang với tham số filter mới
+                window.location.href = '/BaoCao?filter=' + selectedValue;
+            }
+        });
+    }
+
+    // 2. Xử lý sự kiện cho nút Xuất Báo cáo
+    const exportBtn = document.getElementById('export-report-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', function () {
+            const currentFilter = dateRangeSelect ? dateRangeSelect.value : 'month';
+
+            // Gọi đến Action ExportToExcel với tham số filter tương ứng
+            window.location.href = '/BaoCao/ExportToExcel?filter=' + currentFilter;
+        });
     }
 });
 // --- LOGIC FOR QUAN-LY-NGUOI-DUNG.HTML (PHIÊN BẢN HOÀN CHỈNH) ---
