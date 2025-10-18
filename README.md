@@ -23,7 +23,6 @@ Dự án được xây dựng với kiến trúc phân tách rõ ràng giữa Ba
   - [x] Ghi nhận trả sách và tính phí phạt (nếu có).
   - [x] Xem danh sách các sách đang được mượn và sách quá hạn.
 
-*(Lưu ý: Bạn hãy cập nhật lại các dấu `[ ]` thành `[x]` cho những chức năng bạn đã hoàn thành.)*
 
 ## 🛠️ Công nghệ sử dụng
 
